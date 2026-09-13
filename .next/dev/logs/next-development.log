@@ -5,3 +5,4 @@
 {"timestamp":"00:01:54.243","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
 {"timestamp":"00:01:57.029","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
 {"timestamp":"00:02:09.141","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:40:48.438","source":"Server","level":"ERROR","message":"⨯ \"unhandledRejection:\" TurbopackInternalError: range start index 18446744073709549580 out of range for slice of length 52"}
