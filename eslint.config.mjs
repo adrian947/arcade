@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Prototipo de referencia visual (references/templates), nunca se importa desde la app.
+    "references/**",
   ]),
 ]);
 
