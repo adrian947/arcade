@@ -29,7 +29,7 @@ export function GameDetail({ game }: { game: Game }) {
           </div>
           <div className="detail-actions">
             <Link href={`/jugar/${game.id}`} className="btn xl pulse">▶  JUGAR AHORA</Link>
-            <Link href="/" className="btn ghost lg">VOLVER AL VAULT</Link>
+            <Link href="/juegos" className="btn ghost lg">VOLVER AL VAULT</Link>
           </div>
         </div>
       </div>

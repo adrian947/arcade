@@ -10,8 +10,9 @@ export function Nav() {
   const { user, logout } = useUser();
   const [open, setOpen] = useState(false);
 
-  const isActive = (name: "biblioteca" | "salon" | "auth") => {
-    if (name === "biblioteca") return pathname === "/" || pathname.startsWith("/juego") || pathname.startsWith("/jugar");
+  const isActive = (name: "home" | "biblioteca" | "salon" | "auth") => {
+    if (name === "home") return pathname === "/";
+    if (name === "biblioteca") return pathname.startsWith("/juegos") || pathname.startsWith("/juego/") || pathname.startsWith("/jugar");
     if (name === "salon") return pathname.startsWith("/salon");
     return pathname.startsWith("/login");
   };
@@ -28,7 +29,8 @@ export function Nav() {
           </div>
         </Link>
         <div className="links">
-          <Link href="/" className={isActive("biblioteca") ? "active" : ""}>Biblioteca</Link>
+          <Link href="/" className={isActive("home") ? "active" : ""}>Inicio</Link>
+          <Link href="/juegos" className={isActive("biblioteca") ? "active" : ""}>Biblioteca</Link>
           <Link href="/salon" className={isActive("salon") ? "active" : ""}>Salón de la Fama</Link>
         </div>
         <div className="spacer"></div>
@@ -47,7 +49,8 @@ export function Nav() {
       <div className={"av-mobile-backdrop" + (open ? " open" : "")} onClick={close}></div>
       <aside className={"av-mobile-panel" + (open ? " open" : "")}>
         <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>MENÚ</div>
-        <Link href="/" onClick={close} className={isActive("biblioteca") ? "active" : ""}>Biblioteca</Link>
+        <Link href="/" onClick={close} className={isActive("home") ? "active" : ""}>Inicio</Link>
+        <Link href="/juegos" onClick={close} className={isActive("biblioteca") ? "active" : ""}>Biblioteca</Link>
         <Link href="/salon" onClick={close} className={isActive("salon") ? "active" : ""}>Salón de la Fama</Link>
         <Link href="/login" onClick={close} className={isActive("auth") ? "active" : ""}>{user ? "Cuenta" : "Iniciar Sesión"}</Link>
         <div style={{ flex: 1 }}></div>
