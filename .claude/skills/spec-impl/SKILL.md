@@ -1,235 +1,218 @@
 ---
 name: spec-impl
-description: Implements an approved spec. Validates that the state means "Approved" (in any language), creates a git branch named after the spec, switches to it, and starts the implementation step by step with pauses to review diffs.
+description: Implementa un spec aprobado. Valida que el estado signifique "Aprobado" (en cualquier idioma), crea una rama git con el nombre del spec, cambia a ella e implementa TODOS los pasos del plan de corrido, sin pausas intermedias.
 disable-model-invocation: true
-argument-hint: <NN-spec-name>
+argument-hint: <NN-nombre-del-spec>
 allowed-tools: Read, Glob, Grep, Edit, Write, AskUserQuestion, Bash(git status:*), Bash(git branch:*), Bash(git checkout:*), Bash(git log:*), Bash(git diff:*), Bash(git stash:*), Bash(cat:*), Bash(ls:*)
 ---
 
-# /spec-impl — Implementer of approved specs
+# /spec-impl — Implementador de specs aprobados
 
-## Session context
+## Contexto de la sesión
 
-Current repository state:
+Estado actual del repositorio:
 !`git status --short`
 
-Current branch:
+Rama actual:
 !`git branch --show-current`
 
-Specs available in this folder:
-!`ls specs/ 2>/dev/null || echo "The specs/ folder does not exist"`
+Specs disponibles en esta carpeta:
+!`ls specs/ 2>/dev/null || echo "La carpeta specs/ no existe"`
 
-Branch-creation config:
-!`cat specs/.spec-config.yml 2>/dev/null || echo "AutoCreateBranch: true (default, no config file)"`
-
----
-
-## Instructions
-
-Follow these four phases in strict order. **Do not advance to the next phase if the previous one did not complete correctly.**
+Configuración de creación de rama:
+!`cat specs/.spec-config.yml 2>/dev/null || echo "AutoCreateBranch: true (por defecto, sin archivo de configuración)"`
 
 ---
 
-### Phase 1 — Identify the spec
+## Instrucciones
 
-The received argument is: `$ARGUMENTS`
-
-If `$ARGUMENTS` is empty:
-
-- List the files available in `specs/` (you already have them above).
-- Ask the user to specify the exact name of the spec.
-- Stop and wait for an answer. Do not continue.
-
-If `$ARGUMENTS` has a value:
-
-- Look for the file in `specs/`. The user may have written the full name (`01-mvp-arkanoid`), only the number (`01`), or only the slug (`mvp-arkanoid`). Try to find the correct file in any of those cases.
-- If you do not find the file, show the available specs and ask the user to correct the name.
-- If you do find it, continue to Phase 2.
+Sigue estas cuatro fases en orden estricto. **No avances a la siguiente fase si la anterior no se completó correctamente.**
 
 ---
 
-### Phase 2 — Validate the spec's state
+### Fase 1 — Identificar el spec
 
-Read the spec file you located in Phase 1 using the Read tool or `cat`.
+El argumento recibido es: `$ARGUMENTS`
 
-In the file's contents, look for the line that contains the spec's state. The header label is typically `**Status:**` (English) or `**Estado:**` (Spanish), but it may use any language. Match by position (status line near the top of the spec) and by the surrounding state machine, not by the exact label.
+Si `$ARGUMENTS` está vacío:
 
-**Absolute rule:** You can only continue if the state **means "Approved"** — regardless of the language used.
+- Lista los archivos disponibles en `specs/` (ya los tienes arriba).
+- Pide al usuario el nombre exacto del spec.
+- Detente y espera respuesta. No continúes.
 
-Treat any of the following (and their equivalents in other languages) as the **Approved** state and continue:
+Si `$ARGUMENTS` tiene un valor:
 
-- English: `Approved`
-- Spanish: `Aprobado`
-- Portuguese: `Aprovado`
-- French: `Approuvé`
-- German: `Genehmigt`
-- Italian: `Approvato`
-- …or any other language's word that clearly means "approved"
+- Busca el archivo en `specs/`. El usuario pudo escribir el nombre completo (`01-autenticacion`), solo el número (`01`) o solo el slug (`autenticacion`). Intenta encontrar el archivo correcto en cualquiera de esos casos.
+- Si no encuentras el archivo, muestra los specs disponibles y pide al usuario que corrija el nombre.
+- Si lo encuentras, continúa a la Fase 2.
 
-Anything else (Draft / Borrador, In review / En revisión, Implemented / Implementado, Obsolete / Obsoleto, or any unrecognized value) means **stop** and show the error message below.
+---
 
-| State category                            | Examples (any language)                           | Action                                                                     |
+### Fase 2 — Validar el estado del spec
+
+Lee el archivo del spec que ubicaste en la Fase 1 con la herramienta Read o `cat`.
+
+En el contenido, busca la línea que contiene el estado del spec. La etiqueta del encabezado suele ser `**Status:**` (inglés) o `**Estado:**` (español), pero puede estar en cualquier idioma. Reconócela por posición (línea de estado cerca del inicio del spec) y por la máquina de estados que la rodea, no por la etiqueta exacta.
+
+**Regla absoluta:** solo puedes continuar si el estado **significa "Aprobado"**, sin importar el idioma.
+
+Trata como estado **Aprobado** cualquiera de los siguientes (y sus equivalentes en otros idiomas) y continúa:
+
+- Inglés: `Approved`
+- Español: `Aprobado`
+- Portugués: `Aprovado`
+- Francés: `Approuvé`
+- Alemán: `Genehmigt`
+- Italiano: `Approvato`
+- …o cualquier palabra de otro idioma que claramente signifique "aprobado"
+
+Cualquier otra cosa (Draft / Borrador, In review / En revisión, Implemented / Implementado, Obsolete / Obsoleto, o cualquier valor no reconocido) significa **detenerte** y mostrar el mensaje de error de abajo.
+
+| Categoría de estado                       | Ejemplos (cualquier idioma)                       | Acción                                                                     |
 | ----------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
-| Approved                                  | `Approved`, `Aprobado`, `Aprovado`, `Approuvé`, … | Continue to Phase 3.                                                       |
-| Draft                                     | `Draft`, `Borrador`, …                            | Stop. Show the error message below.                                        |
-| In review                                 | `In review`, `En revisión`, …                     | Stop. Show the error message below.                                        |
-| Implemented                               | `Implemented`, `Implementado`, …                  | Stop. Show the error message below.                                        |
-| Obsolete                                  | `Obsolete`, `Obsoleto`, …                         | Stop. Show the error message below.                                        |
-| State line not found / unrecognized value | —                                                 | Stop. The file does not follow the expected format. Tell this to the user. |
+| Aprobado                                  | `Approved`, `Aprobado`, `Aprovado`, `Approuvé`, … | Continuar a la Fase 3.                                                     |
+| Borrador                                  | `Draft`, `Borrador`, …                            | Detenerte. Mostrar el mensaje de error de abajo.                           |
+| En revisión                               | `In review`, `En revisión`, …                     | Detenerte. Mostrar el mensaje de error de abajo.                           |
+| Implementado                              | `Implemented`, `Implementado`, …                  | Detenerte. Mostrar el mensaje de error de abajo.                           |
+| Obsoleto                                  | `Obsolete`, `Obsoleto`, …                         | Detenerte. Mostrar el mensaje de error de abajo.                           |
+| Línea de estado no encontrada / valor no reconocido | —                                       | Detenerte. El archivo no sigue el formato esperado. Díselo al usuario.     |
 
-If you are unsure whether a value means "approved", **do not assume**. Stop and ask the user to clarify or to update the spec to the canonical wording.
+Si no estás seguro de que un valor signifique "aprobado", **no lo asumas**. Detente y pide al usuario que lo aclare o que actualice el spec a la redacción canónica.
 
-**Standard error message when the state does not mean Approved:**
+**Mensaje de error estándar cuando el estado no significa Aprobado:**
 
 ```
-❌ I cannot implement this spec.
+❌ No puedo implementar este spec.
 
-Current state: [STATE FOUND]
-I only work with specs whose state means "Approved" (e.g. `Approved`, `Aprobado`,
-or the equivalent in another language).
+Estado actual: [ESTADO ENCONTRADO]
+Solo trabajo con specs cuyo estado significa "Aprobado" (ej. `Approved`, `Aprobado`,
+o el equivalente en otro idioma).
 
-To continue you have two options:
-  1. If the spec is ready to be implemented, open it and change the state
-     to "Approved" (or the equivalent term your team uses) manually.
-     That change is made by the human, not the agent.
-  2. If the spec still needs work, use /spec [name] to resume it.
+Para continuar tienes dos opciones:
+  1. Si el spec está listo para implementarse, ábrelo y cambia el estado
+     a "Aprobado" (o el término equivalente que use tu equipo) manualmente.
+     Ese cambio lo hace el humano, no el agente.
+  2. Si el spec todavía necesita trabajo, usa /spec [nombre] para retomarlo.
 ```
 
-Do not offer alternatives, do not suggest "I can still start if you want". The block is intentional.
+No ofrezcas alternativas, no sugieras "puedo empezar igual si quieres". El bloqueo es intencional.
 
 ---
 
-### Phase 3 — Create the git branch and switch to it
+### Fase 3 — Crear la rama git y cambiar a ella
 
-Once you have confirmed the state means `Approved`:
+Una vez confirmado que el estado significa `Aprobado`:
 
-0. **Check the working tree first.** Look at the `git status --short` output in the session context above. If it is **not empty**, stop and show the pending changes, then ask:
-
-   ```
-   ⚠️ There are uncommitted changes in the working tree.
-   Switching branches would carry them over. What do you want to do?
-     1. Commit or stash them yourself, then re-run this command  (recommended)
-     2. Continue anyway — the changes travel to the new branch
-   ```
-
-   Wait for the answer. **Do not stash or commit on the user's behalf** unless they explicitly ask for it. If the working tree is clean, skip straight to step 1 without mentioning it.
-
-1. Derive the branch name from the spec file's full name, without the extension. Format: `spec-NN-slug`. Examples:
-
-   - `01-mvp-arkanoid.md` → branch `spec-01-mvp-arkanoid`
-   - `02-powerups.md` → branch `spec-02-powerups`
-
-2. Read the `AutoCreateBranch` flag from the **Branch-creation config** shown in the session context above.
-
-   - If the config file does not exist, the value is missing, or the value is unrecognized → treat it as `true` (the default).
-   - Only an explicit `false` (in any capitalization) disables automatic branch creation.
-
-   **If `AutoCreateBranch` is `true` (default):** proceed without asking.
-
-   - If the branch **does not exist**: create it with `git checkout -b spec-NN-slug`.
-   - If it **already exists**: this means previous work is being resumed. Switch to it, read `git log --oneline` on the branch, and tell the user which steps of the plan already look done and which step you propose to resume from. Wait for confirmation on the resume point before implementing anything.
-   - In both cases: switch to the branch with `git checkout spec-NN-slug` and confirm the change was successful before continuing.
-
-   **If `AutoCreateBranch` is `false`:** ask before touching git. Show:
+0. **Revisa primero el árbol de trabajo.** Mira la salida de `git status --short` del contexto de la sesión. **Ignora el archivo del spec que vas a implementar** (`specs/NN-slug.md`, sea nuevo `??` o modificado `M`): se creó o aprobó en la rama actual y viaja a la nueva rama, donde será parte de su primer commit. Nunca preguntes por ese archivo. Si, descartado ese archivo, **el resto no está vacío**, detente, muestra los cambios pendientes (sin incluir el spec) y pregunta:
 
    ```
-   AutoCreateBranch is set to false.
-   Create and switch to the branch spec-NN-slug? [y/N]
+   ⚠️ Hay cambios sin commitear en el árbol de trabajo.
+   Cambiar de rama los arrastraría. ¿Qué quieres hacer?
+     1. Commitéalos o guárdalos con stash tú mismo y vuelve a ejecutar este comando  (recomendado)
+     2. Continuar igual: los cambios viajan a la nueva rama
    ```
 
-   - If the user answers **yes**: create/switch to the branch exactly as in the `true` case above.
-   - If the user answers **no** or leaves it empty: **do not create any branch.** Tell the user you will implement on the current branch (the one shown in the session context above) and ask for explicit confirmation to continue there. Do not improvise — wait for the answer.
+   Espera la respuesta. **No hagas stash ni commit por el usuario** salvo que lo pida explícitamente. Si el árbol de trabajo está limpio (o solo contiene el archivo del spec), pasa directo al paso 1 sin mencionarlo.
 
-3. Visually confirm to the user the spec is ready and which branch is active:
+1. Deriva el nombre de la rama del nombre completo del archivo del spec, sin la extensión. Formato: `spec-NN-slug`. Ejemplos:
+
+   - `01-autenticacion.md` → rama `spec-01-autenticacion`
+   - `02-notificaciones.md` → rama `spec-02-notificaciones`
+
+2. Lee el flag `AutoCreateBranch` de la **Configuración de creación de rama** del contexto de la sesión.
+
+   - Si el archivo de configuración no existe, falta el valor o no se reconoce → trátalo como `true` (el valor por defecto).
+   - Solo un `false` explícito (con cualquier capitalización) desactiva la creación automática de la rama.
+
+   **Si `AutoCreateBranch` es `true` (por defecto):** procede sin preguntar.
+
+   - Si la rama **no existe**: créala con `git checkout -b spec-NN-slug`.
+   - Si **ya existe**: significa que se retoma trabajo previo. Cambia a ella, lee `git log --oneline` de la rama y dile al usuario qué pasos del plan parecen ya hechos y desde cuál propones retomar. Espera confirmación del punto de retoma antes de implementar nada.
+   - En ambos casos: cambia a la rama con `git checkout spec-NN-slug` y confirma que el cambio fue exitoso antes de continuar.
+
+   **Si `AutoCreateBranch` es `false`:** pregunta antes de tocar git. Muestra:
 
    ```
-   ✅ Ready to implement.
+   AutoCreateBranch está en false.
+   ¿Crear y cambiar a la rama spec-NN-slug? [y/N]
+   ```
+
+   - Si el usuario responde **sí**: crea/cambia a la rama exactamente como en el caso `true`.
+   - Si el usuario responde **no** o lo deja vacío: **no crees ninguna rama.** Dile que implementarás en la rama actual (la que aparece en el contexto de la sesión) y pide confirmación explícita para continuar ahí. No improvises: espera la respuesta.
+
+3. Confirma visualmente al usuario que el spec está listo y qué rama está activa:
+
+   ```
+   ✅ Listo para implementar.
 
    Spec:   specs/NN-slug.md
-   Branch: spec-NN-slug  (active)   (← or the current branch, if no new branch was created)
-   State:  Approved   (← echo back the actual value found in the spec)
+   Rama:   spec-NN-slug  (activa)   (← o la rama actual, si no se creó una nueva)
+   Estado: Aprobado   (← repite el valor real encontrado en el spec)
    ```
 
-4. **Do not start implementing yet.** First show the spec summary to the user so they have it fresh. Extract and show:
-   - The **objective** (the line after `**Objective:**` / `**Objetivo:**` / equivalent label).
-   - The **scope** (the `## Scope` / `## Alcance` / equivalent section).
-   - The **implementation plan** (the section with the numbered steps — `## Implementation plan` / `## Plan de implementación` / equivalent).
-   - The **acceptance criteria** (the checklist — `## Acceptance criteria` / `## Criterios de aceptación` / equivalent).
-
-Match section headings by meaning, not by exact wording — the spec may be authored in any language.
+4. Muestra un **resumen breve** del spec (objetivo y plan de implementación, una línea por paso) como contexto y **continúa de inmediato con la Fase 4**, sin esperar respuesta.
 
 ---
 
-### Phase 4 — Implement step by step
+### Fase 4 — Implementar todo el plan de corrido
 
-After showing the spec summary, tell the user:
+**Implementa TODOS los pasos del plan de implementación en una sola ejecución, en orden, sin pausas ni confirmaciones intermedias.** No preguntes "¿empezamos con el Paso 1?" ni "¿sigo con el Paso N+1?". Si el usuario invocó `/spec-impl`, ya autorizó implementar el spec completo.
 
-```
-I am going to implement the spec following the implementation plan exactly.
-I will pause after each step so you can review the diff.
+Reglas durante toda la implementación:
 
-Shall we start with Step 1?
-```
+**Nunca hagas commit automáticamente.** Ni por paso ni al final. Escribes el código; el commit es decisión y comando del usuario. Solo haz commit si lo pide explícitamente.
 
-Wait for explicit confirmation ("yes", "go ahead", "go", or equivalent). Do not start without it.
+**Una regla por encima de todas:** implementa lo que dice el spec. Si algo del spec te parece subóptimo, menciónalo como observación al final, pero implementa lo acordado. Los cambios al spec van en el spec, no en el código por sorpresa.
 
-Once confirmed, follow these rules during the entire implementation:
+**Ritmo de trabajo:**
 
-**Never commit automatically.** Not per step, not at the end. You write the code and show the diff; committing is the user's decision and the user's command. Only commit if they explicitly ask you to.
+- Implementa los pasos del plan uno tras otro, respetando su orden.
+- Tras cada paso, haz una verificación rápida (lint, typecheck, build o tests, según lo que el proyecto tenga configurado; descúbrelo en `package.json`, `Makefile`, el archivo de memoria del proyecto, etc.) y corrige lo que falle antes de seguir. Esto no es una pausa: es parte del paso.
+- Si el spec pide verificar con alguna herramienta (por ejemplo un navegador automatizado o un script de prueba), hazlo como parte de la ejecución y corrige lo que encuentres dentro del alcance del spec.
 
-**One rule above all:** implement what the spec says. If something in the spec looks suboptimal to you, mention it as an observation but implement what was agreed. Changes to the spec go into the spec, not into the code by surprise.
+**Cuándo SÍ detenerte (únicas excepciones a "sin pausas"):**
 
-**Work rhythm:**
+- **Ambigüedad real** que el spec no resuelve: describe la ambigüedad exacta, presenta dos o tres opciones concretas y espera la decisión del usuario. No improvises.
+- **Bloqueo técnico** que no puedes resolver dentro del alcance del spec (dependencia faltante, error irresoluble). Explica qué intentaste y qué necesitas.
 
-- Implement one step of the plan.
-- Show a summary of which files you touched and what you did.
-- Say: `Step N completed. Could you review the diff and let me know if I continue with Step N+1?`
-- Wait for confirmation before continuing.
+**Si el usuario pide algo fuera del alcance del spec:**
 
-**If during the implementation you find an ambiguity** the spec does not resolve:
+- Recuérdale que está fuera del alcance de este spec.
+- Sugiere anotarlo para el siguiente spec.
+- No lo implementes en esta rama.
 
-- Stop.
-- Describe the ambiguity exactly.
-- Present two or three concrete options.
-- Wait for the user's decision.
-- Do not improvise.
+**Si necesitas un cambio fuera del plan para cumplir un criterio de aceptación** (ej. un ajuste de CSS que el spec no previó): hazlo solo si es mínimo e imprescindible, y decláralo explícitamente en el resumen final como "fuera del plan".
 
-**If the user asks for something that is out of the spec's scope:**
-
-- Remind them that it is out of this spec's scope.
-- Suggest noting it down for the next spec.
-- Do not implement it on this branch.
-
-**When finishing the last step:**
+**Al terminar el último paso**, entrega un resumen final con: archivos creados/modificados, resultado de las verificaciones, observaciones o cambios fuera del plan, y este cierre:
 
 ```
-✅ All steps of the plan are implemented.
+✅ Todos los pasos del plan están implementados.
 
-Next step: verify the spec's acceptance criteria one by one.
-If they all pass, update the spec's state to "Implemented" (or the equivalent
-in your repo's language) and make the final commit before merging this branch.
+Siguiente paso: verifica uno por uno los criterios de aceptación del spec.
+Si todos pasan, actualiza el estado del spec a "Implementado" (o el equivalente
+en el idioma de tu repo) y haz el commit final antes de mergear esta rama.
 ```
 
 ---
 
-## Summary of expected behavior
+## Resumen del comportamiento esperado
 
 ```
-/spec-impl 01-mvp-arkanoid
+/spec-impl 01-autenticacion
 
-  Phase 1  →  Finds specs/01-mvp-arkanoid.md
-  Phase 2  →  Reads the state → "Approved" (or "Aprobado", etc.) → ✅ continues
-  Phase 3  →  git checkout -b spec-01-mvp-arkanoid → git checkout spec-01-mvp-arkanoid
-              Shows objective, scope, plan and criteria
-  Phase 4  →  Implements step by step with pauses
-              Ends by reminding to verify the acceptance criteria
+  Fase 1  →  Encuentra specs/01-autenticacion.md
+  Fase 2  →  Lee el estado → "Approved" (o "Aprobado", etc.) → ✅ continúa
+  Fase 3  →  git checkout -b spec-01-autenticacion
+             Muestra resumen de objetivo y plan
+  Fase 4  →  Implementa TODOS los pasos de corrido, verificando cada uno
+             Termina con resumen y recordatorio de verificar criterios
 
-/spec-impl 02-powerups  (state: Draft / Borrador)
+/spec-impl 02-notificaciones  (estado: Draft / Borrador)
 
-  Phase 1  →  Finds specs/02-powerups.md
-  Phase 2  →  Reads the state → "Draft" → ❌ stops
-              Shows the standard error message
-              Does not create branch, does not touch code
+  Fase 1  →  Encuentra specs/02-notificaciones.md
+  Fase 2  →  Lee el estado → "Draft" → ❌ se detiene
+             Muestra el mensaje de error estándar
+             No crea rama, no toca código
 ```
 
-**Branch creation is controlled by the `AutoCreateBranch` flag** in `specs/.spec-config.yml`. It defaults to `true` (create the branch automatically, as shown above). Set it to `false` to make Phase 3 ask `[y/N]` before creating the branch.
+**La creación de la rama la controla el flag `AutoCreateBranch`** de `specs/.spec-config.yml`. Por defecto vale `true` (crea la rama automáticamente, como se muestra arriba). Ponlo en `false` para que la Fase 3 pregunte `[y/N]` antes de crearla.
