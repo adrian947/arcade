@@ -1,0 +1,7 @@
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
+
+export const supabase = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://localhost:54321",
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "missing-publishable-key",
+);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/user";
 import { saveScore } from "@/lib/scores";
@@ -13,8 +14,10 @@ export function GamePlayer({ game }: { game: Game }) {
   const [lives, setLives] = useState(3);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
-  const [name, setName] = useState(user ? user.name : "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const name = user ? user.name : "INVITADO";
   const level = Math.floor(score / 2500) + 1;
 
   useEffect(() => {
@@ -30,6 +33,20 @@ export function GamePlayer({ game }: { game: Game }) {
     setPaused(false);
     setOver(false);
     setSaved(false);
+    setSaveError(null);
+  };
+
+  const handleSave = async () => {
+    if (!user || saving) return;
+    setSaving(true);
+    setSaveError(null);
+    const err = await saveScore(user.id, game.id, score);
+    setSaving(false);
+    if (err) {
+      setSaveError(err);
+      return;
+    }
+    setSaved(true);
   };
 
   return (
@@ -79,21 +96,23 @@ export function GamePlayer({ game }: { game: Game }) {
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
             <div className="final">{score.toLocaleString("es-ES")}</div>
-            {!saved ? (
-              <div className="input-row">
-                <input value={name} onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))} placeholder="TUS INICIALES" />
-                <button
-                  className="btn yellow"
-                  onClick={() => {
-                    saveScore({ game: game.id, score, name });
-                    setSaved(true);
-                  }}
-                >
-                  GUARDAR PUNTUACIÓN
-                </button>
+            {saved ? (
+              <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+            ) : user ? (
+              <div>
+                <div className="input-row">
+                  <button className="btn yellow" onClick={handleSave} disabled={saving}>
+                    {saving ? "GUARDANDO…" : saveError ? "REINTENTAR" : "GUARDAR PUNTUACIÓN"}
+                  </button>
+                </div>
+                {saveError && (
+                  <div role="alert" className="mono" style={{ color: "var(--red, #ff3b5c)", fontSize: 11, letterSpacing: "0.1em", marginTop: 8 }}>
+                    ▸ {saveError}
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+              <Link className="btn yellow" href="/login">INICIA SESIÓN PARA GUARDAR</Link>
             )}
             <div className="actions">
               <button className="btn" onClick={restart}>JUGAR DE NUEVO</button>

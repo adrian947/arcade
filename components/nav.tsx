@@ -7,7 +7,7 @@ import { useUser } from "@/lib/user";
 
 export function Nav() {
   const pathname = usePathname();
-  const { user, logout } = useUser();
+  const { user, loading, logout } = useUser();
   const [open, setOpen] = useState(false);
 
   const isActive = (name: "home" | "biblioteca" | "salon" | "about" | "auth") => {
@@ -40,7 +40,9 @@ export function Nav() {
           <span className="coin"></span>
           <span>CRÉDITOS · 03</span>
         </div>
-        {user ? (
+        {loading ? (
+          <span className="btn ghost auth-btn" aria-hidden style={{ visibility: "hidden" }}>···</span>
+        ) : user ? (
           <button className="btn ghost auth-btn" onClick={logout}>{user.name} ▾</button>
         ) : (
           <Link href="/login" className="btn auth-btn">Iniciar Sesión</Link>

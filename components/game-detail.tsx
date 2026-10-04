@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
-import { seededScores, type Game } from "@/lib/data";
+import type { Game } from "@/lib/data";
+import { useLeaderboard } from "@/lib/use-leaderboard";
 
 export function GameDetail({ game }: { game: Game }) {
-  const scores = useMemo(() => seededScores(game.id.length * 17 + 3, 10), [game.id]);
+  const { rows: scores, status } = useLeaderboard(game.id, 10);
 
   return (
     <div className="av-detail fade-in">
@@ -37,6 +37,9 @@ export function GameDetail({ game }: { game: Game }) {
       <aside>
         <div className="leaderboard">
           <h3>MEJORES PUNTUACIONES</h3>
+          {status === "loading" && <div className="lb-row"><div className="pl">CARGANDO RANKING…</div></div>}
+          {status === "error" && <div className="lb-row"><div className="pl" role="alert" style={{ color: "var(--red, #ff3b5c)" }}>▸ NO SE PUDO CARGAR EL RANKING</div></div>}
+          {status === "ok" && scores.length === 0 && <div className="lb-row"><div className="pl">SÉ EL PRIMERO EN EL VAULT</div></div>}
           {scores.map((r, i) => (
             <div key={r.name} className={"lb-row" + (i === 0 ? " top1" : i === 1 ? " top2" : i === 2 ? " top3" : "")}>
               <div className="rk">#{String(r.rank).padStart(2, "0")}</div>
