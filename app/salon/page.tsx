@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { GAMES, seededScores } from "@/lib/data";
+import { GAMES } from "@/lib/data";
+import { useLeaderboard, useMyBest } from "@/lib/use-leaderboard";
 import { useUser } from "@/lib/user";
 
 export default function SalonPage() {
   const { user } = useUser();
   const [tab, setTab] = useState(GAMES[0].id);
-  const rows = useMemo(() => seededScores(tab.length * 23 + 7, 12), [tab]);
+  const { rows, status } = useLeaderboard(tab, 12);
+  const mine = useMyBest(tab, user?.id ?? null);
   const game = GAMES.find((g) => g.id === tab)!;
-  const youRank = user ? Math.floor(8 + (tab.length % 4)) : null;
-  const youScore = user ? (rows[5]?.score ?? 0) - 2400 : null;
+  const slot = (i: number) => rows[i] ?? { rank: i + 1, name: "---", score: 0, date: "" };
+  const scoreText = (i: number) => (rows[i] ? rows[i].score.toLocaleString("es-ES") : "---");
 
   return (
     <div className="av-hall fade-in">
@@ -29,22 +31,22 @@ export default function SalonPage() {
       <div className="podium">
         <div className="podium-slot silver">
           <div className="rank-num">02</div>
-          <div className="name">{rows[1].name}</div>
-          <div className="score">{rows[1].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[1].date}</div>
+          <div className="name">{slot(1).name}</div>
+          <div className="score">{scoreText(1)}</div>
+          <div className="date">{slot(1).date}</div>
         </div>
         <div className="podium-slot gold">
           <div className="pixel" style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}>CAMPEÓN</div>
           <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>01</div>
-          <div className="name">{rows[0].name}</div>
-          <div className="score" style={{ fontSize: 20 }}>{rows[0].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[0].date}</div>
+          <div className="name">{slot(0).name}</div>
+          <div className="score" style={{ fontSize: 20 }}>{scoreText(0)}</div>
+          <div className="date">{slot(0).date}</div>
         </div>
         <div className="podium-slot bronze">
           <div className="rank-num">03</div>
-          <div className="name">{rows[2].name}</div>
-          <div className="score">{rows[2].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[2].date}</div>
+          <div className="name">{slot(2).name}</div>
+          <div className="score">{scoreText(2)}</div>
+          <div className="date">{slot(2).date}</div>
         </div>
       </div>
 
@@ -55,6 +57,15 @@ export default function SalonPage() {
           <div>PUNTUACIÓN</div>
           <div>FECHA</div>
         </div>
+        {status === "loading" && (
+          <div className="tr"><div className="pl" style={{ gridColumn: "1 / -1", textAlign: "center" }}>CARGANDO RANKING…</div></div>
+        )}
+        {status === "error" && (
+          <div className="tr"><div className="pl" role="alert" style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--red, #ff3b5c)" }}>▸ NO SE PUDO CARGAR EL RANKING</div></div>
+        )}
+        {status === "ok" && rows.length === 0 && (
+          <div className="tr"><div className="pl" style={{ gridColumn: "1 / -1", textAlign: "center" }}>SÉ EL PRIMERO EN EL VAULT</div></div>
+        )}
         {rows.map((r, i) => (
           <div
             key={r.name + i}
@@ -67,14 +78,14 @@ export default function SalonPage() {
             <div className="dt">{r.date}</div>
           </div>
         ))}
-        {user && (
+        {user && mine && (
           <>
             <div className="tr you-label">▸ TU MEJOR MARCA EN {game.title}</div>
             <div className="tr you" style={{ animationDelay: `${rows.length * 50 + 50}ms` }}>
-              <div className="rk" style={{ color: "var(--yellow)" }}>#{String(youRank).padStart(2, "0")}</div>
+              <div className="rk" style={{ color: "var(--yellow)" }}>#{String(mine.rank).padStart(2, "0")}</div>
               <div className="pl" style={{ color: "var(--yellow)" }}>{user.name}</div>
-              <div className="sc" style={{ color: "var(--yellow)", textShadow: "0 0 6px rgba(245,255,0,0.5)" }}>{(youScore || 9999).toLocaleString("es-ES")}</div>
-              <div className="dt">11/05/2026</div>
+              <div className="sc" style={{ color: "var(--yellow)", textShadow: "0 0 6px rgba(245,255,0,0.5)" }}>{mine.score.toLocaleString("es-ES")}</div>
+              <div className="dt">{mine.date}</div>
             </div>
           </>
         )}

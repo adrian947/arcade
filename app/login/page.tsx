@@ -2,19 +2,34 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/lib/user";
+import { MIN_PASSWORD, useUser } from "@/lib/user";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useUser();
+  const { signIn, signUp } = useUser();
   const [tab, setTab] = useState<"in" | "up">("in");
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const submit = (e: FormEvent) => {
+  const switchTab = (t: "in" | "up") => {
+    setTab(t);
+    setError(null);
+  };
+
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-    login({ name: (user || "PLAYER1").toUpperCase().slice(0, 10) });
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    const err = tab === "in" ? await signIn(email, pass) : await signUp(user, email, pass);
+    setBusy(false);
+    if (err) {
+      setError(err);
+      return;
+    }
     router.push("/juegos");
   };
 
@@ -28,38 +43,41 @@ export default function LoginPage() {
         </div>
 
         <div className="auth-tabs">
-          <button className={tab === "in" ? "on" : ""} onClick={() => setTab("in")}>INICIAR SESIÓN</button>
-          <button className={tab === "up" ? "on" : ""} onClick={() => setTab("up")}>CREAR CUENTA</button>
+          <button className={tab === "in" ? "on" : ""} type="button" onClick={() => switchTab("in")}>INICIAR SESIÓN</button>
+          <button className={tab === "up" ? "on" : ""} type="button" onClick={() => switchTab("up")}>CREAR CUENTA</button>
         </div>
 
         <form onSubmit={submit}>
-          <div className="field">
-            <label>Usuario</label>
-            <input value={user} onChange={(e) => setUser(e.target.value)} placeholder="px_kai" />
-          </div>
           {tab === "up" && (
             <div className="field slide-in">
-              <label>Correo electrónico</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jugador@vault.gg" />
+              <label>Usuario</label>
+              <input value={user} onChange={(e) => setUser(e.target.value.toUpperCase().slice(0, 10))} placeholder="PX_KAI" autoComplete="username" required />
             </div>
           )}
           <div className="field">
+            <label>Correo electrónico</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jugador@vault.gg" autoComplete="email" required />
+          </div>
+          <div className="field">
             <label>Contraseña</label>
-            <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="••••••••" />
+            <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="••••••••" autoComplete={tab === "in" ? "current-password" : "new-password"} minLength={tab === "up" ? MIN_PASSWORD : undefined} required />
           </div>
 
-          <button className="btn lg" type="submit" style={{ width: "100%", marginTop: 8 }}>
-            {tab === "in" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
+          {error && (
+            <div role="alert" className="mono" style={{ color: "var(--red, #ff3b5c)", fontSize: 11, letterSpacing: "0.1em", marginBottom: 8, textShadow: "0 0 6px rgba(255,59,92,0.45)" }}>
+              ▸ {error}
+            </div>
+          )}
+
+          <button className="btn lg" type="submit" disabled={busy} style={{ width: "100%", marginTop: 8 }}>
+            {busy ? "CONECTANDO…" : tab === "in" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
           </button>
         </form>
 
         <button
           className="btn ghost"
           style={{ width: "100%", marginTop: 10 }}
-          onClick={() => {
-            login(null);
-            router.push("/juegos");
-          }}
+          onClick={() => router.push("/juegos")}
         >
           JUGAR COMO INVITADO
         </button>
