@@ -786,7 +786,7 @@ a { color: inherit; text-decoration: none; }
 }
 .modal .final-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: var(--ink-faint); text-transform: uppercase; }
 .modal .input-row {
-  display: flex; gap: 8px; margin: 22px 0 12px;
+  display: flex; gap: 8px; justify-content: center; margin: 22px 0 12px;
 }
 .modal .input-row input {
   flex: 1;
