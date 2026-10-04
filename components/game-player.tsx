@@ -1,39 +1,125 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/user";
 import { saveScore } from "@/lib/scores";
 import type { Game } from "@/lib/data";
+import { ENGINES } from "@/games/registry";
+import type { GameEngine, GameStats } from "@/games/types";
+
+const TOUCH_QUERY = "(hover: none) and (pointer: coarse)";
+
+function subscribeTouch(onChange: () => void) {
+  const mq = window.matchMedia(TOUCH_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+// Dispositivo táctil sin teclado físico (en servidor se asume que no).
+function useTouchOnly() {
+  return useSyncExternalStore(
+    subscribeTouch,
+    () => window.matchMedia(TOUCH_QUERY).matches,
+    () => false,
+  );
+}
 
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
   const { user } = useUser();
+  const factory = ENGINES[game.id];
+  const touchOnly = useTouchOnly();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const engineRef = useRef<GameEngine | null>(null);
+  const [runId, setRunId] = useState(0);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
+  const [engineLevel, setEngineLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const name = user ? user.name : "INVITADO";
-  const level = Math.floor(score / 2500) + 1;
+  const level = factory ? engineLevel : Math.floor(score / 2500) + 1;
+  const engineEnabled = !!factory && !touchOnly;
 
+  // Arena simulada para juegos sin motor real.
   useEffect(() => {
-    if (over || paused) return;
+    if (factory || over || paused) return;
     const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [factory, over, paused]);
 
-  const endGame = () => setOver(true);
+  // Motor real: se crea por partida (runId) y se destruye al salir o reiniciar.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    // matchMedia directo: en la hidratación touchOnly aún vale el snapshot del servidor (false).
+    if (!factory || !engineEnabled || !canvas || window.matchMedia(TOUCH_QUERY).matches) return;
+    const engine = factory(canvas, {
+      onStats: (s: GameStats) => {
+        setScore(s.score);
+        setLives(s.lives);
+        setEngineLevel(s.level);
+      },
+      onGameOver: (finalScore) => {
+        setScore(finalScore);
+        setOver(true);
+      },
+    });
+    engineRef.current = engine;
+    return () => {
+      engine.destroy();
+      if (engineRef.current === engine) engineRef.current = null;
+    };
+  }, [factory, engineEnabled, runId]);
+
+  // Sincroniza la pausa de React con el motor.
+  useEffect(() => {
+    const engine = engineRef.current;
+    if (!engine || over) return;
+    if (paused) engine.pause();
+    else engine.resume();
+  }, [paused, over, runId]);
+
+  // Teclas P / Escape y auto-pausa al perder foco (solo motor real en juego).
+  useEffect(() => {
+    if (!engineEnabled || over) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code === "KeyP" || e.code === "Escape") {
+        e.preventDefault();
+        setPaused((p) => !p);
+      }
+    };
+    const autoPause = () => setPaused(true);
+    const onVisibility = () => {
+      if (document.hidden) autoPause();
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("blur", autoPause);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("blur", autoPause);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [engineEnabled, over]);
+
+  const endGame = () => {
+    if (engineRef.current) setScore(engineRef.current.end());
+    setOver(true);
+  };
   const restart = () => {
     setScore(0);
     setLives(3);
+    setEngineLevel(1);
     setPaused(false);
     setOver(false);
     setSaved(false);
     setSaveError(null);
+    setRunId((r) => r + 1);
   };
 
   const handleSave = async () => {
@@ -67,13 +153,25 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor"></div>
-            <div className="enemy e1"></div>
-            <div className="enemy e2"></div>
-            <div className="enemy e3"></div>
-            <div className="player-ship"></div>
-          </div>
+          {factory ? (
+            <canvas key={runId} ref={canvasRef} className="game-canvas" width={800} height={600} />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor"></div>
+              <div className="enemy e1"></div>
+              <div className="enemy e2"></div>
+              <div className="enemy e3"></div>
+              <div className="player-ship"></div>
+            </div>
+          )}
+          {factory && touchOnly && (
+            <div className="crt-content" style={{ zIndex: 5 }}>
+              <div>
+                <div className="pixel neon-yellow" style={{ fontSize: 18 }}>REQUIERE TECLADO</div>
+                <div className="mono" style={{ fontSize: 11, color: "var(--ink-dim)", marginTop: 10, letterSpacing: "0.16em" }}>JUEGA DESDE UN COMPUTADOR</div>
+              </div>
+            </div>
+          )}
           {paused && (
             <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
               <div>
