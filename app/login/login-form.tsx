@@ -4,13 +4,15 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { MIN_PASSWORD, useUser } from "@/lib/user";
 
-export default function LoginPage() {
+type Props = { defaultEmail?: string; defaultPassword?: string };
+
+export function LoginForm({ defaultEmail = "", defaultPassword = "" }: Props) {
   const router = useRouter();
   const { signIn, signUp } = useUser();
   const [tab, setTab] = useState<"in" | "up">("in");
   const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
-  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState(defaultPassword);
+  const [email, setEmail] = useState(defaultEmail);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
