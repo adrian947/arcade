@@ -48,6 +48,17 @@ export const GAMES: Game[] = [
     plays: "0",
   },
   {
+    id: "snake",
+    title: "SNAKE",
+    short: "Come fruta, crece y no te muerdas la cola.",
+    long: "Guía a la serpiente por un tablero de 32×24 con las flechas o WASD. Cada fruta la alarga una celda y suma 10 puntos por nivel; cada cinco frutas sube el nivel y se mueve más rápido. Un choque contra la pared o contra tu propio cuerpo y se acabó.",
+    cat: "ARCADE",
+    cover: "cover-snake-vault",
+    color: "yellow",
+    best: 0,
+    plays: "0",
+  },
+  {
     id: "bloque-buster",
     title: "BLOQUE BUSTER",
     short: "Rebota la pelota y destruye muros de neón.",
