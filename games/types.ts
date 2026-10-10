@@ -15,3 +15,9 @@ export type GameEngine = {
 };
 
 export type GameFactory = (canvas: HTMLCanvasElement, callbacks: GameCallbacks) => GameEngine;
+
+// Entrada del registro: fábrica más metadatos que la plataforma usa para el HUD.
+export type EngineEntry = {
+  factory: GameFactory;
+  lives?: boolean; // false oculta el stat de Vidas en el HUD de plataforma
+};

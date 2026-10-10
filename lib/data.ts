@@ -26,6 +26,17 @@ export const GAMES: Game[] = [
     plays: "0",
   },
   {
+    id: "tetris",
+    title: "TETRIS",
+    short: "Encaja, rota y limpia líneas antes de tocar el techo.",
+    long: "Un pozo de 10×20 y ocho piezas, incluida la tuerca, una rareza con hueco al centro. Rota con rebote en las paredes, guíate por la pieza fantasma y suelta en caída libre para sumar extra. Cada 10 líneas sube el nivel y la caída se acelera.",
+    cat: "PUZZLE",
+    cover: "cover-tetris",
+    color: "green",
+    best: 0,
+    plays: "0",
+  },
+  {
     id: "bloque-buster",
     title: "BLOQUE BUSTER",
     short: "Rebota la pelota y destruye muros de neón.",

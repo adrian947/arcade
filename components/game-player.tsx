@@ -29,7 +29,9 @@ function useTouchOnly() {
 export function GamePlayer({ game }: { game: Game }) {
   const router = useRouter();
   const { user } = useUser();
-  const factory = ENGINES[game.id];
+  const entry = ENGINES[game.id];
+  const factory = entry?.factory;
+  const showLives = entry?.lives !== false;
   const touchOnly = useTouchOnly();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
@@ -141,7 +143,9 @@ export function GamePlayer({ game }: { game: Game }) {
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           <div className="hud-stat"><div className="l">Jugador</div><div className="v" style={{ color: "var(--ink)" }}>{name}</div></div>
           <div className="hud-stat"><div className="l">Puntuación</div><div className="v">{score.toLocaleString("es-ES")}</div></div>
-          <div className="hud-stat lives"><div className="l">Vidas</div><div className="v">{"♥ ".repeat(lives).trim() || "—"}</div></div>
+          {showLives && (
+            <div className="hud-stat lives"><div className="l">Vidas</div><div className="v">{"♥ ".repeat(lives).trim() || "—"}</div></div>
+          )}
           <div className="hud-stat level"><div className="l">Nivel</div><div className="v">{String(level).padStart(2, "0")}</div></div>
         </div>
         <div className="hud-actions">
