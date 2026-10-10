@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Press_Start_2P, JetBrains_Mono, Courier_Prime } from "next/font/google";
 import { Nav } from "@/components/nav";
@@ -25,6 +26,15 @@ const courierPrime = Courier_Prime({
 export const metadata: Metadata = {
   title: "Arcade Vault · Portal Retro",
   description: "Plataforma arcade retro donde los jugadores compiten por el high score.",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: { url: "/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+  },
+  manifest: "/favicon/site.webmanifest",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -45,6 +55,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               style={{
                 borderTop: "1px solid var(--line)",
                 padding: "20px 32px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexWrap: "wrap",
+                gap: 12,
                 textAlign: "center",
                 color: "var(--ink-faint)",
                 fontFamily: "var(--mono)",
@@ -52,7 +67,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 letterSpacing: "0.16em",
               }}
             >
-              © 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0
+              <Image src="/logo_akiradev64_sin_fondo.png" alt="Logo de AkiraDev64" width={32} height={33} />
+              <span>© 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0</span>
             </footer>
           </div>
         </UserProvider>
