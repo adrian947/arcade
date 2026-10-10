@@ -37,6 +37,17 @@ export const GAMES: Game[] = [
     plays: "0",
   },
   {
+    id: "arkanoid",
+    title: "ARKANOID",
+    short: "Rompe el muro ladrillo a ladrillo sin dejar caer la pelota.",
+    long: "Mueve la paleta con el ratón o las flechas y devuelve la pelota contra cinco muros distintos: parrilla, pirámide, ajedrez, huecos y marco con cruz. Cada ladrillo vale 10 puntos y cada muro superado acelera la pelota un 10 %. Tienes tres vidas para limpiar los cinco.",
+    cat: "ARCADE",
+    cover: "cover-arkanoid",
+    color: "magenta",
+    best: 0,
+    plays: "0",
+  },
+  {
     id: "bloque-buster",
     title: "BLOQUE BUSTER",
     short: "Rebota la pelota y destruye muros de neón.",
