@@ -11,5 +11,5 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
   tetris: { factory: createTetris, lives: false },
   arkanoid: { factory: createArkanoid },
   snake: { factory: createSnake, lives: false },
-  ranaria: { factory: createRanaria },
+  ranaria: { factory: createRanaria, skins: ["clasico", "neon", "retro"] },
 };

@@ -1,5 +1,10 @@
 // Contrato común de los motores de juego de Arcade Vault.
 
+export type SkinId = "clasico" | "neon" | "retro";
+export const DEFAULT_SKIN: SkinId = "clasico";
+
+export type GameOptions = { skin: SkinId };
+
 export type GameStats = { score: number; lives: number; level: number };
 
 export type GameCallbacks = {
@@ -12,12 +17,14 @@ export type GameEngine = {
   resume: () => void;
   end: () => number; // detiene definitivamente (botón FIN) y devuelve el score actual; no dispara onGameOver
   destroy: () => void; // cancela requestAnimationFrame y quita listeners; idempotente
+  setSkin?: (skin: SkinId) => void; // aplica el skin en vivo y redibuja; opcional
 };
 
-export type GameFactory = (canvas: HTMLCanvasElement, callbacks: GameCallbacks) => GameEngine;
+export type GameFactory = (canvas: HTMLCanvasElement, callbacks: GameCallbacks, options?: GameOptions) => GameEngine;
 
 // Entrada del registro: fábrica más metadatos que la plataforma usa para el HUD.
 export type EngineEntry = {
   factory: GameFactory;
   lives?: boolean; // false oculta el stat de Vidas en el HUD de plataforma
+  skins?: readonly SkinId[]; // skins implementados; ausente = solo "clasico"
 };
