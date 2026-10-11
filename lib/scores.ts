@@ -55,3 +55,33 @@ export async function fetchMyBest(gameId: string, userId: string): Promise<MyBes
 
   return { rank: (count ?? 0) + 1, score: data.score, date: formatDate(data.created_at) };
 }
+
+export type GameStat = { best: number; plays: string };
+
+// "1234" → "1.2K", como el formato del catálogo.
+function formatPlays(n: number): string {
+  if (n < 1000) return String(n);
+  return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K`;
+}
+
+// Récord global y partidas jugadas de cada juego con ranking real (filas de public.games).
+export async function fetchGameStats(): Promise<Record<string, GameStat>> {
+  const [games, board] = await Promise.all([
+    supabase.from("games").select("id"),
+    supabase.from("leaderboard").select("game_id, score"),
+  ]);
+  if (games.error) throw games.error;
+  if (board.error) throw board.error;
+
+  const counts = await Promise.all(
+    games.data.map((g) => supabase.from("scores").select("id", { count: "exact", head: true }).eq("game_id", g.id)),
+  );
+
+  const stats: Record<string, GameStat> = {};
+  games.data.forEach((g, i) => {
+    if (counts[i].error) throw counts[i].error;
+    const best = board.data.reduce((m, r) => (r.game_id === g.id && (r.score ?? 0) > m ? (r.score ?? 0) : m), 0);
+    stats[g.id] = { best, plays: formatPlays(counts[i].count ?? 0) };
+  });
+  return stats;
+}

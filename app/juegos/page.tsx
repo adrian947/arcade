@@ -4,8 +4,9 @@ import { useMemo, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CATS, GAMES, type Game } from "@/lib/data";
+import { useGameStats } from "@/lib/use-leaderboard";
 
-function GameCard({ game }: { game: Game }) {
+function GameCard({ game, best }: { game: Game; best: number }) {
   const router = useRouter();
   const tiltRef = useRef<HTMLDivElement>(null);
   const href = `/juego/${game.id}`;
@@ -42,7 +43,7 @@ function GameCard({ game }: { game: Game }) {
         <div className="row">
           <div className="score-badge">
             <span>MEJOR PUNTUACIÓN</span>
-            <b>{game.best.toLocaleString("es-ES")}</b>
+            <b>{best.toLocaleString("es-ES")}</b>
           </div>
           <Link
             href={href}
@@ -60,6 +61,7 @@ function GameCard({ game }: { game: Game }) {
 export default function Library() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("TODOS");
+  const stats = useGameStats();
 
   const filtered = useMemo(() => {
     return GAMES.filter((g) => (cat === "TODOS" || g.cat === cat) && g.title.toLowerCase().includes(q.toLowerCase()));
@@ -90,7 +92,7 @@ export default function Library() {
 
       <div className="av-grid">
         {filtered.map((g) => (
-          <GameCard key={g.id} game={g} />
+          <GameCard key={g.id} game={g} best={stats?.[g.id]?.best ?? g.best} />
         ))}
         {filtered.length === 0 && (
           <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: 80, color: "var(--ink-faint)" }}>
