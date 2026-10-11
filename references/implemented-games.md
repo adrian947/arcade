@@ -4,15 +4,17 @@ Juegos con motor real y leaderboard, según la tabla `public.games` de Supabase 
 
 Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simulada (demo).
 
-| # | id | Título | Categoría | Alta en `games` | Spec | Motor | Vidas en HUD | Partidas | Jugadores | Récord |
-| - | -- | ------ | --------- | --------------- | ---- | ----- | ------------ | -------- | --------- | ------ |
-| 1 | `asteroides` | ASTEROIDES | SHOOTER | 2026-10-04 | [05](../specs/05-asteroides-juego-real.md) | `games/asteroids/engine.ts` | Sí | 2 | 1 | 1180 |
-| 2 | `tetris` | TETRIS | PUZZLE | 2026-10-10 | [07](../specs/07-juego-tetris.md) | `games/tetris/engine.ts` | No | 1 | 1 | 238 |
-| 3 | `arkanoid` | ARKANOID | ARCADE | 2026-10-10 | [08](../specs/08-juego-arkanoid.md) | `games/arkanoid/engine.ts` | Sí | 1 | 1 | 10 |
-| 4 | `snake` | SNAKE | ARCADE | 2026-10-10 | [09](../specs/09-juego-snake.md) | `games/snake/engine.ts` | No | 2 | 1 | 70 |
-| 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | 0 | 0 | — |
+| # | id | Título | Categoría | Alta en `games` | Spec | Motor | Vidas en HUD | Skins | Partidas | Jugadores | Récord |
+| - | -- | ------ | --------- | --------------- | ---- | ----- | ------------ | ----- | -------- | --------- | ------ |
+| 1 | `asteroides` | ASTEROIDES | SHOOTER | 2026-10-04 | [05](../specs/05-asteroides-juego-real.md) | `games/asteroids/engine.ts` | Sí | clasico | 2 | 1 | 1180 |
+| 2 | `tetris` | TETRIS | PUZZLE | 2026-10-10 | [07](../specs/07-juego-tetris.md) | `games/tetris/engine.ts` | No | clasico | 1 | 1 | 238 |
+| 3 | `arkanoid` | ARKANOID | ARCADE | 2026-10-10 | [08](../specs/08-juego-arkanoid.md) | `games/arkanoid/engine.ts` | Sí | clasico | 1 | 1 | 10 |
+| 4 | `snake` | SNAKE | ARCADE | 2026-10-10 | [09](../specs/09-juego-snake.md) | `games/snake/engine.ts` | No | clasico | 2 | 1 | 70 |
+| 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
+
+Los skins se eligen en `/jugar/<id>` cuando el juego declara 2 o más (SPEC 11); los agrega el agente `skin-designer`.
 
 En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña oculta pausa automáticamente.
 

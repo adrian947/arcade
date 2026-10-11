@@ -7,7 +7,9 @@ import { useUser } from "@/lib/user";
 import { saveScore } from "@/lib/scores";
 import type { Game } from "@/lib/data";
 import { ENGINES } from "@/games/registry";
-import type { GameEngine, GameStats } from "@/games/types";
+import { DEFAULT_SKIN, type GameEngine, type GameStats, type SkinId } from "@/games/types";
+import { SKIN_LABELS, SKIN_ORDER } from "@/games/skins";
+import { useSkin } from "@/lib/use-skin";
 
 const TOUCH_QUERY = "(hover: none) and (pointer: coarse)";
 
@@ -32,6 +34,9 @@ export function GamePlayer({ game }: { game: Game }) {
   const entry = ENGINES[game.id];
   const factory = entry?.factory;
   const showLives = entry?.lives !== false;
+  const skins: readonly SkinId[] = entry?.skins ?? [DEFAULT_SKIN];
+  const [skin, setSkinPref] = useSkin(game.id, skins);
+  const skinRef = useRef<SkinId>(skin);
   const touchOnly = useTouchOnly();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
@@ -55,6 +60,12 @@ export function GamePlayer({ game }: { game: Game }) {
     return () => clearInterval(t);
   }, [factory, over, paused]);
 
+  // Skin activo: lo usa cada motor nuevo y se aplica en vivo al actual (sin reiniciar).
+  useEffect(() => {
+    skinRef.current = skin;
+    engineRef.current?.setSkin?.(skin);
+  }, [skin, runId]);
+
   // Motor real: se crea por partida (runId) y se destruye al salir o reiniciar.
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -70,7 +81,7 @@ export function GamePlayer({ game }: { game: Game }) {
         setScore(finalScore);
         setOver(true);
       },
-    });
+    }, { skin: skinRef.current });
     engineRef.current = engine;
     return () => {
       engine.destroy();
@@ -149,6 +160,24 @@ export function GamePlayer({ game }: { game: Game }) {
           <div className="hud-stat level"><div className="l">Nivel</div><div className="v">{String(level).padStart(2, "0")}</div></div>
         </div>
         <div className="hud-actions">
+          {factory && skins.length >= 2 && (
+            <div className="skin-picker" role="group" aria-label="Skin del juego">
+              {SKIN_ORDER.filter((s) => skins.includes(s)).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className={"chip" + (skin === s ? " active" : "")}
+                  aria-pressed={skin === s}
+                  onClick={(e) => {
+                    setSkinPref(s);
+                    e.currentTarget.blur(); // Espacio/Enter no deben reactivarlo mientras se juega
+                  }}
+                >
+                  {SKIN_LABELS[s]}
+                </button>
+              ))}
+            </div>
+          )}
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>{paused ? "REANUDAR" : "PAUSA"}</button>
           <button className="btn magenta" onClick={endGame}>FIN</button>
           <button className="btn ghost" onClick={() => router.push(`/juego/${game.id}`)}>SALIR</button>

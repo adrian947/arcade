@@ -1,7 +1,8 @@
 // Motor de RANARIA (SPEC 10), diseñado desde cero en la game jam: cruce de carretera y río
 // estilo Frogger. Todo el estado mutable vive dentro de la instancia.
 
-import type { GameFactory } from "@/games/types";
+import { DEFAULT_SKIN, type GameFactory, type SkinId } from "@/games/types";
+import { getPalette } from "@/games/ranaria/skins";
 
 const W = 800;
 const H = 600;
@@ -80,51 +81,12 @@ const EYES: Record<Dir, readonly [number, number][]> = {
 };
 const EYE_SIZE = 6;
 
-type Palette = {
-  green: string;
-  cyan: string;
-  magenta: string;
-  yellow: string;
-  silver: string;
-  bronze: string;
-  gold: string;
-  ink: string;
-  inkDim: string;
-  line: string;
-  font: string;
-};
-
-// Lee los tokens de globals.css desde el canvas (hereda las variables de fuente de <html>).
-function readPalette(canvas: HTMLCanvasElement): Palette {
-  const style = getComputedStyle(canvas);
-  const token = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback;
-  return {
-    green: token("--green", "#00ff88"),
-    cyan: token("--cyan", "#00f5ff"),
-    magenta: token("--magenta", "#ff006e"),
-    yellow: token("--yellow", "#f5ff00"),
-    silver: token("--silver", "#c7d0e0"),
-    bronze: token("--bronze", "#d97a3a"),
-    gold: token("--gold", "#ffcf3a"),
-    ink: token("--ink", "#e6e9ff"),
-    inkDim: token("--ink-dim", "#8a8fb5"),
-    line: token("--line-2", "rgba(255, 255, 255, 0.06)"),
-    font: token("--pixel", "monospace"),
-  };
-}
-
-function withAlpha(color: string, alpha: number): string {
-  const m = /^#([0-9a-f]{6})$/i.exec(color);
-  if (!m) return color;
-  const n = parseInt(m[1], 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha.toFixed(2)})`;
-}
-
 const mod = (a: number, n: number) => ((a % n) + n) % n;
 
-export const createRanaria: GameFactory = (canvas, callbacks) => {
+export const createRanaria: GameFactory = (canvas, callbacks, options) => {
   const ctx = canvas.getContext("2d")!;
-  const colors = readPalette(canvas);
+  let colors = getPalette(options?.skin ?? DEFAULT_SKIN, canvas);
+  let labelSprite: HTMLCanvasElement | null = null; // rótulo umbralizado para skins "pixel"
 
   // ── Estado de la instancia ──────────────────────────────────────────────────
   let row = START_ROW;
@@ -144,6 +106,7 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
   let destroyed = false;
   let lastTime: number | null = null;
   let rafId: number | null = null;
+  let clock = 0; // ms de mundo (parpadeos del skin); se congela en pausa
   let emitted = { score: -1, lives: -1, level: -1 };
 
   const isRunning = () => !paused && !destroyed && (phase === "waiting" || phase === "playing" || phase === "dying");
@@ -251,6 +214,7 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
 
   const update = (dt: number) => {
     const sec = dt / 1000;
+    clock += dt;
     const riding = phase === "playing" ? ridingLane() : -1;
 
     LANES.forEach((lane, i) => {
@@ -283,30 +247,90 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
   };
 
   // ── Draw ────────────────────────────────────────────────────────────────────
+  // En skins "pixel" todo va en coordenadas enteras y sin formas curvas: solo los colores de la paleta.
+  const px = (v: number) => (colors.pixel ? Math.round(v) : v);
+
+  const withGlow = (color: string, blur: number, paint: () => void) => {
+    if (colors.glow > 0 && blur > 0) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = blur;
+    }
+    paint();
+    ctx.shadowBlur = 0;
+  };
+
   const fillRow = (r: number, color: string) => {
     ctx.fillStyle = color;
     ctx.fillRect(0, r * CELL, W, CELL);
   };
 
+  const hLine = (y: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, y - 1, W, 2);
+  };
+
+  // Círculo relleno: arco normal o, en skins "pixel", filas de rectángulos enteros.
+  const fillCircle = (x: number, y: number, r: number, color: string) => {
+    ctx.fillStyle = color;
+    if (!colors.pixel) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      return;
+    }
+    const cx0 = Math.round(x);
+    const cy0 = Math.round(y);
+    for (let dy = -r; dy < r; dy += 2) {
+      const half = Math.round(Math.sqrt(r * r - (dy + 1) * (dy + 1)));
+      ctx.fillRect(cx0 - half, cy0 + dy, half * 2, 2);
+    }
+  };
+
   const drawFrogAt = (x: number, y: number, size: number, dir: Dir) => {
-    ctx.fillStyle = colors.green;
-    ctx.fillRect(x - size / 2, y - size / 2, size, size);
+    const fx = px(x - size / 2);
+    const fy = px(y - size / 2);
+    if (colors.frogBorder) {
+      ctx.fillStyle = colors.frogBorder;
+      ctx.fillRect(fx - 2, fy - 2, size + 4, size + 4);
+    }
+    withGlow(colors.frog, colors.glow + 4, () => {
+      ctx.fillStyle = colors.frog;
+      ctx.fillRect(fx, fy, size, size);
+    });
     const scale = size / FROG_SIZE;
-    const eye = EYE_SIZE * scale;
-    ctx.fillStyle = colors.ink;
-    for (const [ex, ey] of EYES[dir]) ctx.fillRect(x + ex * scale - eye / 2, y + ey * scale - eye / 2, eye, eye);
+    const eye = colors.pixel ? Math.round(EYE_SIZE * scale) : EYE_SIZE * scale;
+    ctx.fillStyle = colors.frogEye;
+    for (const [ex, ey] of EYES[dir]) ctx.fillRect(px(x + ex * scale - eye / 2), px(y + ey * scale - eye / 2), eye, eye);
   };
 
   const drawBackground = () => {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = colors.bg;
     ctx.fillRect(0, 0, W, H);
-    fillRow(0, withAlpha(colors.green, 0.25));
-    for (let r = 1; r <= 5; r++) fillRow(r, withAlpha(colors.cyan, 0.15));
-    fillRow(6, withAlpha(colors.magenta, 0.12));
-    fillRow(11, withAlpha(colors.magenta, 0.12));
+    if (colors.bankFill) fillRow(0, colors.bankFill);
+    if (colors.waterFill) for (let r = 1; r <= 5; r++) fillRow(r, colors.waterFill);
+    if (colors.sidewalkFill) {
+      fillRow(6, colors.sidewalkFill);
+      fillRow(11, colors.sidewalkFill);
+    }
+
+    if (colors.bankStroke) withGlow(colors.bankStroke, colors.glow, () => hLine(CELL, colors.bankStroke!));
+    if (colors.waterLines) {
+      ctx.fillStyle = colors.waterLines;
+      for (let y = CELL + 12; y < 6 * CELL; y += 12) ctx.fillRect(0, y, W, 1);
+    }
+    if (colors.sidewalkStroke) {
+      const stroke = colors.sidewalkStroke;
+      withGlow(stroke, colors.glow - 4, () => {
+        for (const r of [6, 11]) {
+          ctx.fillStyle = stroke;
+          ctx.fillRect(0, r * CELL, W, 2);
+          ctx.fillRect(0, (r + 1) * CELL - 2, W, 2);
+        }
+      });
+    }
 
     // Líneas discontinuas entre carriles de la carretera.
-    ctx.strokeStyle = colors.line;
+    ctx.strokeStyle = colors.laneLine;
     ctx.lineWidth = 2;
     ctx.setLineDash([20, 16]);
     ctx.beginPath();
@@ -321,52 +345,97 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
   const drawNests = () => {
     NEST_XS.forEach((x, i) => {
       const y = CELL / 2;
-      ctx.fillStyle = "#000";
-      ctx.strokeStyle = colors.green;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(x, y, NEST_RADIUS, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+      if (colors.pixel) {
+        fillCircle(x, y, NEST_RADIUS + 2, colors.nestStroke);
+        fillCircle(x, y, NEST_RADIUS - 2, colors.nestFill);
+      } else {
+        ctx.fillStyle = colors.nestFill;
+        ctx.strokeStyle = colors.nestStroke;
+        ctx.lineWidth = 2;
+        withGlow(colors.nestStroke, colors.glow, () => {
+          ctx.beginPath();
+          ctx.arc(x, y, NEST_RADIUS, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        });
+      }
       if (nests[i]) drawFrogAt(x, y, 24, "down");
     });
   };
 
-  const vehicleColor = (r: number) =>
-    r === 10 ? colors.magenta : r === 9 ? colors.yellow : r === 7 ? colors.cyan : colors.silver;
+  // Rectángulo relleno o, con outline, solo contorno de 2 px; ambos con el glow del skin.
+  const drawBody = (x: number, y: number, w: number, h: number, color: string, blur: number) => {
+    withGlow(color, blur, () => {
+      if (colors.outline) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+      } else {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, w, h);
+      }
+    });
+  };
+
+  const vehicleColor = (r: number) => (r === 10 || r === 9 || r === 7 ? colors.cars[r] : colors.truck);
 
   const drawLanes = () => {
     LANES.forEach((lane, li) => {
       const top = lane.row * CELL;
-      for (const x of laneObjects(li)) {
+      for (const ox of laneObjects(li)) {
+        const x = px(ox);
         if (lane.kind === "car" || lane.kind === "truck") {
-          ctx.fillStyle = vehicleColor(lane.row);
-          ctx.fillRect(x + 2, top + 10, lane.len - 4, CELL - 20);
+          drawBody(x + 2, top + 10, lane.len - 4, CELL - 20, vehicleColor(lane.row), colors.glow);
+          if (lane.kind === "truck" && colors.truckWindow) {
+            ctx.fillStyle = colors.truckWindow;
+            const wx = lane.dir === 1 ? x + lane.len - 24 : x + 10;
+            ctx.fillRect(wx, top + 16, 14, CELL - 32);
+          }
           // Faros en el frente, según la dirección de marcha.
-          ctx.fillStyle = colors.ink;
+          ctx.fillStyle = colors.headlight;
           const fx = lane.dir === 1 ? x + lane.len - 8 : x + 2;
           ctx.fillRect(fx, top + 13, 6, 6);
           ctx.fillRect(fx, top + CELL - 19, 6, 6);
         } else if (lane.kind === "log") {
-          ctx.fillStyle = colors.bronze;
-          ctx.fillRect(x, top + 8, lane.len, CELL - 16);
-          ctx.strokeStyle = colors.gold;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          for (let gx = x + 20; gx < x + lane.len - 10; gx += 40) {
-            ctx.moveTo(gx, top + 18);
-            ctx.lineTo(gx + 18, top + 18);
-            ctx.moveTo(gx + 10, top + CELL - 18);
-            ctx.lineTo(gx + 28, top + CELL - 18);
+          drawBody(x, top + 8, lane.len, CELL - 16, colors.log, colors.glow - 2);
+          if (colors.pixel) {
+            ctx.fillStyle = colors.logGrain;
+            for (let gx = x + 20; gx < x + lane.len - 10; gx += 40) {
+              ctx.fillRect(gx, top + 17, 18, 2);
+              ctx.fillRect(gx + 10, top + CELL - 19, 18, 2);
+            }
+          } else {
+            ctx.strokeStyle = colors.logGrain;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let gx = x + 20; gx < x + lane.len - 10; gx += 40) {
+              ctx.moveTo(gx, top + 18);
+              ctx.lineTo(gx + 18, top + 18);
+              ctx.moveTo(gx + 10, top + CELL - 18);
+              ctx.lineTo(gx + 28, top + CELL - 18);
+            }
+            ctx.stroke();
           }
-          ctx.stroke();
         } else {
           const n = Math.round(lane.len / 40);
-          ctx.fillStyle = colors.gold;
           for (let k = 0; k < n; k++) {
-            ctx.beginPath();
-            ctx.arc(x + 20 + k * 40, top + CELL / 2, 16, 0, Math.PI * 2);
-            ctx.fill();
+            const tx = x + 20 + k * 40;
+            const ty = top + CELL / 2;
+            if (colors.outline) {
+              withGlow(colors.turtle, colors.glow - 2, () => {
+                ctx.strokeStyle = colors.turtle;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(tx, ty, 15, 0, Math.PI * 2);
+                ctx.stroke();
+              });
+            } else {
+              fillCircle(tx, ty, 16, colors.turtle);
+            }
+            if (colors.turtleDot) {
+              ctx.fillStyle = colors.turtleDot;
+              ctx.fillRect(tx - 3, ty - 3, 6, 6);
+            }
           }
         }
       }
@@ -377,38 +446,88 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
     const y = row * CELL + CELL / 2;
     if (phase === "dying" || phase === "over") {
       const h = FROG_SIZE / 2;
-      ctx.strokeStyle = colors.magenta;
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(cx - h, y - h);
-      ctx.lineTo(cx + h, y + h);
-      ctx.moveTo(cx + h, y - h);
-      ctx.lineTo(cx - h, y + h);
-      ctx.stroke();
+      if (colors.pixel) {
+        // X escalonada con bloques de 6 px.
+        ctx.fillStyle = colors.dead;
+        const x0 = Math.round(cx);
+        for (let d = -h; d < h; d += 4) {
+          ctx.fillRect(x0 + d - 2, y + d - 2, 6, 6);
+          ctx.fillRect(x0 - d - 4, y + d - 2, 6, 6);
+        }
+        return;
+      }
+      withGlow(colors.dead, colors.glow + 4, () => {
+        ctx.strokeStyle = colors.dead;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(cx - h, y - h);
+        ctx.lineTo(cx + h, y + h);
+        ctx.moveTo(cx + h, y - h);
+        ctx.lineTo(cx - h, y + h);
+        ctx.stroke();
+      });
       return;
     }
     drawFrogAt(cx, y, FROG_SIZE, facing);
   };
 
   const drawTimeBar = () => {
-    ctx.fillStyle = timeLeft > 10 ? colors.green : timeLeft > 5 ? colors.yellow : colors.magenta;
-    ctx.fillRect(0, 592, (W * Math.max(0, timeLeft)) / TIME_PER_FROG, 6);
+    let color = timeLeft > 10 ? colors.timeHigh : timeLeft > 5 ? colors.timeMid : colors.timeLow;
+    if (timeLeft <= 5 && colors.timeLowBlink && Math.floor(clock / 125) % 2 === 1) color = colors.timeLowBlink;
+    withGlow(color, colors.glow - 4, () => {
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 592, px((W * Math.max(0, timeLeft)) / TIME_PER_FROG), 6);
+    });
+  };
+
+  // Texto sin antialiasing para skins "pixel": se dibuja una vez en un canvas aparte y se umbraliza.
+  const buildLabelSprite = (text: string) => {
+    const off = document.createElement("canvas");
+    off.width = W;
+    off.height = CELL;
+    const octx = off.getContext("2d")!;
+    octx.font = `16px ${colors.font}`;
+    octx.textAlign = "center";
+    octx.textBaseline = "middle";
+    octx.fillStyle = "#fff";
+    octx.fillText(text, W / 2, CELL / 2);
+    const img = octx.getImageData(0, 0, W, CELL);
+    const m = /^#([0-9a-f]{6})$/i.exec(colors.label);
+    const n = m ? parseInt(m[1], 16) : 0xffffff;
+    for (let i = 0; i < img.data.length; i += 4) {
+      const on = img.data[i + 3] >= 128;
+      img.data[i] = (n >> 16) & 255;
+      img.data[i + 1] = (n >> 8) & 255;
+      img.data[i + 2] = n & 255;
+      img.data[i + 3] = on ? 255 : 0;
+    }
+    octx.putImageData(img, 0, 0);
+    return off;
+  };
+
+  const drawLabel = (text: string) => {
+    if (colors.pixel) {
+      if (!labelSprite) labelSprite = buildLabelSprite(text);
+      ctx.drawImage(labelSprite, 0, 6 * CELL);
+      return;
+    }
+    withGlow(colors.label, colors.glow - 4, () => {
+      ctx.fillStyle = colors.label;
+      ctx.font = `16px ${colors.font}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, W / 2, 6 * CELL + CELL / 2); // en la mediana
+    });
   };
 
   const draw = () => {
+    ctx.imageSmoothingEnabled = !colors.pixel;
     drawBackground();
     drawNests();
     drawLanes();
     drawFrog();
     drawTimeBar();
-
-    if (phase === "waiting") {
-      ctx.fillStyle = colors.inkDim;
-      ctx.font = `16px ${colors.font}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("PULSA UNA FLECHA", W / 2, 6 * CELL + CELL / 2); // en la mediana
-    }
+    if (phase === "waiting") drawLabel("PULSA UNA FLECHA");
   };
 
   // ── Loop principal ──────────────────────────────────────────────────────────
@@ -452,6 +571,10 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
   };
 
   window.addEventListener("keydown", onKeyDown);
+  // La fuente pixel puede cargar después del primer rótulo umbralizado.
+  void document.fonts?.ready.then(() => {
+    labelSprite = null;
+  });
 
   // ── Inicio ──────────────────────────────────────────────────────────────────
   draw();
@@ -473,6 +596,12 @@ export const createRanaria: GameFactory = (canvas, callbacks) => {
       if (phase === "waiting" || phase === "playing" || phase === "dying") phase = "ended";
       stopLoop();
       return score;
+    },
+    setSkin(skin: SkinId) {
+      if (destroyed) return;
+      colors = getPalette(skin, canvas);
+      labelSprite = null;
+      draw(); // visible aunque el loop esté detenido (pausa, espera o fin)
     },
     destroy() {
       if (destroyed) return;
