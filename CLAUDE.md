@@ -83,7 +83,13 @@ Project skills (`.claude/skills/`, user-invoked only):
 - `/spec <descripción>` — guided spec design: asks clarifying questions, writes `specs/NN-*.md`. No code.
 - `/spec-impl <NN-nombre>` — validates the spec is approved, creates/switches to branch `spec-NN-slug` (controlled by `AutoCreateBranch` in `specs/.spec-config.yml`) and implements the whole plan in one go.
 - `/nuevo-juego <juego o carpeta de references/started-games>` — writes the spec for adding a real game (engine + registry + catalog + cover + `public.games` row) using `game-spec-template.md`. No code; implement afterwards with `/spec-impl`.
+- `/game-jam <tema>` — picks two distinct design angles for a theme and launches two `game-jam` agents in parallel; each writes a full game spec in `specs/game-jam/<tema-slug>-<id>.md` (status `Borrador`, unnumbered). No code. To implement one, move it to `specs/NN-juego-<id>.md`, approve it and run `/spec-impl`.
 - `/neko` — playful cat-persona communication mode.
+
+Project subagents (`.claude/agents/`):
+
+- `game-planner` — decides which game to add next: scores top 3 candidates against platform fit and returns a brief for `/nuevo-juego`. Keeps a versioned memory of past suggestions (sugerido / aceptado / descartado / implementado) in `.claude/agent-memory/game-planner/`.
+- `game-jam` — designs ONE original game from a theme + assigned angle and writes its spec using `.claude/skills/nuevo-juego/game-spec-template.md`. Non-interactive (records assumptions in Decisiones). Launched in pairs by `/game-jam`; subagents can't spawn subagents, so orchestration lives in the skill.
 
 ## Diseño UI
 

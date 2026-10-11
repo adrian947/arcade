@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchLeaderboard, fetchMyBest, type LeaderboardRow, type MyBest } from "@/lib/scores";
+import { fetchGameStats, fetchLeaderboard, fetchMyBest, type GameStat, type LeaderboardRow, type MyBest } from "@/lib/scores";
 
 export type Status = "loading" | "ok" | "error";
 
@@ -40,4 +40,21 @@ export function useMyBest(gameId: string, userId: string | null): MyBest | null 
   }, [gameId, userId, key]);
 
   return key && result.key === key ? result.best : null;
+}
+
+// Récord y partidas reales por juego; null mientras carga o si falla (se usan los valores del catálogo).
+export function useGameStats(): Record<string, GameStat> | null {
+  const [stats, setStats] = useState<Record<string, GameStat> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchGameStats()
+      .then((s) => !cancelled && setStats(s))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return stats;
 }
