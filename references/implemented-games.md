@@ -12,6 +12,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 4 | `snake` | SNAKE | ARCADE | 2026-10-10 | [09](../specs/09-juego-snake.md) | `games/snake/engine.ts` | No | clasico | Sí | 2 | 1 | 70 |
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -73,6 +74,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** +10 por fila nueva alcanzada por rana · +50 por boca + 10 por segundo restante · +200 por ronda completa
 - **Skins:** clasico, neon, retro (`games/frogger/skins.ts`)
 - **Táctil:** ◀ ▶ ▲ ▼ saltar (una celda por toque)
+
+## 7. BLOQUE BUSTER
+
+- **Ruta:** `/jugar/bloque-buster`
+- **Origen:** diseñado desde cero; convierte la entrada demo `bloque-buster` del catálogo (misma portada `.cover-bricks`)
+- **Descripción:** paleta y bola contra un muro de 12×16 bloques de 4 colores, distinto de ARKANOID en dos cosas. (1) **Núcleo cromático:** la bola lleva un color y solo rompe bloques de ese color, pulverizando de una vez todo el grupo conectado (4 vecinos); tocar un bloque de otro color no lo rompe: la bola rebota y adopta ese color. (2) **Muro descendente:** solo 7 filas visibles al empezar; cada `max(4, 10 − 0,75 × (nivel − 1))` s baja una fila (barra de tiempo arriba). Si cruza la línea de peligro hay brecha: −1 vida y se retiran las 3 filas inferiores. Muros procedurales deterministas (4 patrones que rotan por nivel). Vaciar el muro sube el nivel y acelera la bola un 6 % (tope ×1,6). Tres vidas.
+- **Controles:** `←` `→` / `A` `D` mover la nave · `Espacio` / `↑` / `W` lanzar la bola
+- **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
+- **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
+- **Táctil:** ◀ ▶ mover · A LANZAR
 
 ---
 
