@@ -4,6 +4,7 @@ import { createTetris } from "@/games/tetris/engine";
 import { createArkanoid } from "@/games/arkanoid/engine";
 import { createSnake } from "@/games/snake/engine";
 import { createRanaria } from "@/games/ranaria/engine";
+import { createFrogger } from "@/games/frogger/engine";
 
 // Juegos con motor real. Los que no figuran aquí usan la arena simulada.
 export const ENGINES: Partial<Record<string, EngineEntry>> = {
@@ -16,4 +17,9 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
     touch: { keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" } },
   },
   ranaria: { factory: createRanaria, skins: ["clasico", "neon", "retro"] },
+  frogger: {
+    factory: createFrogger,
+    skins: ["clasico", "neon", "retro"],
+    touch: { keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" } },
+  },
 };

@@ -11,6 +11,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 3 | `arkanoid` | ARKANOID | ARCADE | 2026-10-10 | [08](../specs/08-juego-arkanoid.md) | `games/arkanoid/engine.ts` | Sí | clasico | No | 1 | 1 | 10 |
 | 4 | `snake` | SNAKE | ARCADE | 2026-10-10 | [09](../specs/09-juego-snake.md) | `games/snake/engine.ts` | No | clasico | Sí | 2 | 1 | 70 |
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
+| 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -62,6 +63,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Descripción:** tablero de 16×12 al estilo Frogger. La rana esquiva 4 carriles de coches y camiones, cruza 5 carriles de río montada en troncos y tortugas (el agua mata) y debe ocupar los 5 nenúfares de la orilla. 30 s por rana, con barra de tiempo en el canvas. Al llenar los 5 nenúfares sube el nivel y todo va un 15 % más rápido (tope ×2.2). Tráfico fijo, sin azar. Tres vidas.
 - **Controles:** flechas o `WASD`, un salto de una celda por pulsación (mantener no repite)
 - **Puntuación:** +10 por fila nueva alcanzada por rana · +50 por nenúfar · +10 por segundo restante al llegar · +1000 por nivel completo
+
+## 6. FROGGER
+
+- **Ruta:** `/jugar/frogger`
+- **Origen:** diseñado desde cero; reescritura al contrato de la plataforma del spec de game jam `specs/game-jam/01-frogger-core.md`
+- **Descripción:** tablero de 16×14 celdas de 40 px centrado en el canvas de 800×600. 5 carriles de coches y camiones, mediana segura y 6 carriles de río con troncos y tortugas (algunos grupos se hunden: 3 s a flote, 1,5 s bajo el agua, con aviso). Arriba, 5 bocas de 2 columnas; caer en el seto o en una boca ocupada mata. 15 s por rana (−1 s por nivel, mínimo 8), barra de tiempo bajo el tablero. Al llenar las 5 bocas sube el nivel y todo va un 15 % más rápido (tope ×2,5). Tres vidas.
+- **Controles:** flechas o `WASD`, un salto de una celda por pulsación con animación de 120 ms (mantener no repite; una dirección en cola durante el salto)
+- **Puntuación:** +10 por fila nueva alcanzada por rana · +50 por boca + 10 por segundo restante · +200 por ronda completa
+- **Skins:** clasico, neon, retro (`games/frogger/skins.ts`)
+- **Táctil:** ◀ ▶ ▲ ▼ saltar (una celda por toque)
 
 ---
 
