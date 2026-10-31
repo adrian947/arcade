@@ -10,6 +10,7 @@ import { ENGINES } from "@/games/registry";
 import { DEFAULT_SKIN, type GameEngine, type GameStats, type SkinId } from "@/games/types";
 import { SKIN_LABELS, SKIN_ORDER } from "@/games/skins";
 import { useSkin } from "@/lib/use-skin";
+import { TouchGamepad } from "@/components/touch-gamepad";
 
 const TOUCH_QUERY = "(hover: none) and (pointer: coarse)";
 
@@ -34,6 +35,7 @@ export function GamePlayer({ game }: { game: Game }) {
   const entry = ENGINES[game.id];
   const factory = entry?.factory;
   const showLives = entry?.lives !== false;
+  const touch = entry?.touch;
   const skins: readonly SkinId[] = entry?.skins ?? [DEFAULT_SKIN];
   const [skin, setSkinPref] = useSkin(game.id, skins);
   const skinRef = useRef<SkinId>(skin);
@@ -51,7 +53,8 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const name = user ? user.name : "INVITADO";
   const level = factory ? engineLevel : Math.floor(score / 2500) + 1;
-  const engineEnabled = !!factory && !touchOnly;
+  // En táctil solo hay motor si el juego declara mapeo (gamepad); si no, "REQUIERE TECLADO".
+  const engineEnabled = !!factory && (!touchOnly || !!touch);
 
   // Arena simulada para juegos sin motor real.
   useEffect(() => {
@@ -70,7 +73,7 @@ export function GamePlayer({ game }: { game: Game }) {
   useEffect(() => {
     const canvas = canvasRef.current;
     // matchMedia directo: en la hidratación touchOnly aún vale el snapshot del servidor (false).
-    if (!factory || !engineEnabled || !canvas || window.matchMedia(TOUCH_QUERY).matches) return;
+    if (!factory || !engineEnabled || !canvas || (!touch && window.matchMedia(TOUCH_QUERY).matches)) return;
     const engine = factory(canvas, {
       onStats: (s: GameStats) => {
         setScore(s.score);
@@ -87,7 +90,7 @@ export function GamePlayer({ game }: { game: Game }) {
       engine.destroy();
       if (engineRef.current === engine) engineRef.current = null;
     };
-  }, [factory, engineEnabled, runId]);
+  }, [factory, engineEnabled, touch, runId]);
 
   // Sincroniza la pausa de React con el motor.
   useEffect(() => {
@@ -197,7 +200,7 @@ export function GamePlayer({ game }: { game: Game }) {
               <div className="player-ship"></div>
             </div>
           )}
-          {factory && touchOnly && (
+          {factory && touchOnly && !touch && (
             <div className="crt-content" style={{ zIndex: 5 }}>
               <div>
                 <div className="pixel neon-yellow" style={{ fontSize: 18 }}>REQUIERE TECLADO</div>
@@ -220,6 +223,8 @@ export function GamePlayer({ game }: { game: Game }) {
           <span>CARGA · 1MB</span>
         </div>
       </div>
+
+      {factory && touchOnly && touch && <TouchGamepad controls={touch} disabled={paused || over} />}
 
       {over && (
         <div className="modal-bd">

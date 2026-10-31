@@ -63,8 +63,8 @@ Copy `.env.example` to `.env.local` (all `.env*` except `.env.example` are gitig
 
 ### Game engines (`games/`)
 
-- `games/types.ts` — engine contract: `GameFactory(canvas, { onStats, onGameOver }, options?: { skin })` returns `{ pause, resume, end, destroy, setSkin? }`. `SkinId = "clasico" | "neon" | "retro"` (default `clasico`); `setSkin` applies a skin live and redraws even when paused. `end()` returns score without firing `onGameOver`; `destroy()` is idempotent and must cancel rAF + remove listeners.
-- `games/registry.ts` — `ENGINES` map `id → { factory, lives? }`. `lives: false` hides the Lives stat in the HUD (tetris, snake). `skins?: SkinId[]` declares implemented skins; with ≥ 2, `/jugar` shows the CLÁSICO / NEÓN / RETRO selector (`games/skins.ts`), remembered per game in `localStorage` (`av:skin:<gameId>`, hook `lib/use-skin.ts`). Pattern: `games/ranaria/skins.ts`. Ids not in the map use the simulated arena.
+- `games/types.ts` — engine contract: `GameFactory(canvas, { onStats, onGameOver }, options?: { skin })` returns `{ pause, resume, end, destroy, setSkin? }`. `SkinId = "clasico" | "neon" | "retro"` (default `clasico`); `setSkin` applies a skin live and redraws even when paused. `end()` returns score without firing `onGameOver`; `destroy()` is idempotent and must cancel rAF + remove listeners. Engines listen to keyboard on `window` by `e.code` and must not filter `e.isTrusted`: on touch devices the platform gamepad (`components/touch-gamepad.tsx`) dispatches synthetic `KeyboardEvent`s.
+- `games/registry.ts` — `ENGINES` map `id → { factory, lives? }`. `lives: false` hides the Lives stat in the HUD (tetris, snake). `skins?: SkinId[]` declares implemented skins; with ≥ 2, `/jugar` shows the CLÁSICO / NEÓN / RETRO selector (`games/skins.ts`), remembered per game in `localStorage` (`av:skin:<gameId>`, hook `lib/use-skin.ts`). Pattern: `games/ranaria/skins.ts`. `touch?: TouchControls` (`{ keys: { up|down|left|right|a|b → KeyboardEvent.code }, labels?, repeat? }`) makes the game playable on touch devices with the gamepad below the CRT; without it, touch devices show "REQUIERE TECLADO". Pattern: `snake`. Ids not in the map use the simulated arena.
 - One folder per game: `asteroids/`, `tetris/`, `arkanoid/` (`levels.ts`, `sprites.ts`), `snake/` (`sprites.ts`). Assets in `public/games/<id>/`.
 - Platform owns HUD (score/lives/level), pause (button, `P`/`Esc`, auto-pause on tab hidden) and game-over/save UI — engines must not draw those nor bind `P`/`Esc`. Engines read colors from CSS tokens (see `readPalette` pattern in `games/asteroids/engine.ts`).
 
@@ -82,6 +82,7 @@ Project skills (`.claude/skills/`, user-invoked only):
 
 - `/spec <descripción>` — guided spec design: asks clarifying questions, writes `specs/NN-*.md`. No code.
 - `/spec-impl <NN-nombre>` — validates the spec is approved, creates/switches to branch `spec-NN-slug` (controlled by `AutoCreateBranch` in `specs/.spec-config.yml`) and implements the whole plan in one go.
+- `/spec-impl-game <NN-nombre>` — same flow as `/spec-impl` (reads and follows its SKILL.md) for a game spec; when implementation finishes, runs `skin-designer` and then `mobile-porter` on that game, sequentially (never in parallel), then a final lint + build.
 - `/nuevo-juego <juego o carpeta de references/started-games>` — writes the spec for adding a real game (engine + registry + catalog + cover + `public.games` row) using `game-spec-template.md`. No code; implement afterwards with `/spec-impl`.
 - `/game-jam <tema>` — picks two distinct design angles for a theme and launches two `game-jam` agents in parallel; each writes a full game spec in `specs/game-jam/<tema-slug>-<id>.md` (status `Borrador`, unnumbered). No code. To implement one, move it to `specs/NN-juego-<id>.md`, approve it and run `/spec-impl`.
 - `/neko` — playful cat-persona communication mode.
@@ -91,6 +92,7 @@ Project subagents (`.claude/agents/`):
 - `game-planner` — decides which game to add next: scores top 3 candidates against platform fit and returns a brief for `/nuevo-juego`. Keeps a versioned memory of past suggestions (sugerido / aceptado / descartado / implementado) in `.claude/agent-memory/game-planner/`.
 - `game-jam` — designs ONE original game from a theme + assigned angle and writes its spec using `.claude/skills/nuevo-juego/game-spec-template.md`. Non-interactive (records assumptions in Decisiones). Launched in pairs by `/game-jam`; subagents can't spawn subagents, so orchestration lives in the skill.
 - `skin-designer` — ensures every real game has ≥ 3 skins (`clasico` default, `neon`, `retro`). Point it at a game to add missing skins (edits only `games/<carpeta>/**`, its registry line and implemented-games), or ask for an audit table. Requires the platform skin infrastructure (selector in `/jugar` + `localStorage` + skin passed to the engine), which comes from its own spec; stops if it's missing.
+- `mobile-porter` — makes ONE real game playable on touch devices: reads its engine's key handling (read-only) and declares its touch mapping (D-pad + A/B → `KeyboardEvent.code`) in its `games/registry.ts` line + implemented-games. Requires the platform touch infrastructure (on-screen gamepad that dispatches synthetic key events + `touch` field in `EngineEntry`), which comes from its own spec; stops if it's missing.
 
 ## Diseño UI
 

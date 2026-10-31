@@ -22,9 +22,20 @@ export type GameEngine = {
 
 export type GameFactory = (canvas: HTMLCanvasElement, callbacks: GameCallbacks, options?: GameOptions) => GameEngine;
 
+// Botones del gamepad táctil de plataforma.
+export type TouchButton = "up" | "down" | "left" | "right" | "a" | "b";
+
+// Mapeo táctil: cada botón simula un KeyboardEvent.code que el motor ya escucha en window.
+export type TouchControls = {
+  keys: Partial<Record<TouchButton, string>>; // botón → code simulado (ej. "ArrowUp", "Space"); nunca KeyP / Escape
+  labels?: Partial<Record<"a" | "b", string>>; // texto del botón A/B, mayúsculas, ≤ 8 caracteres (ej. "ROTAR")
+  repeat?: readonly TouchButton[]; // botones que re-disparan keydown mientras se mantienen
+};
+
 // Entrada del registro: fábrica más metadatos que la plataforma usa para el HUD.
 export type EngineEntry = {
   factory: GameFactory;
   lives?: boolean; // false oculta el stat de Vidas en el HUD de plataforma
   skins?: readonly SkinId[]; // skins implementados; ausente = solo "clasico"
+  touch?: TouchControls; // mapeo táctil; ausente = "REQUIERE TECLADO" en dispositivos táctiles
 };
