@@ -88,8 +88,8 @@ export const GAMES: Game[] = [
     cat: "ARCADE",
     cover: "cover-bricks",
     color: "cyan",
-    best: 28450,
-    plays: "12.4K",
+    best: 0,
+    plays: "0",
   },
   {
     id: "caida",
