@@ -70,6 +70,17 @@ export const GAMES: Game[] = [
     plays: "0",
   },
   {
+    id: "frogger",
+    title: "FROGGER",
+    short: "Cruza la carretera y el río sin convertirte en papilla.",
+    long: "Guía a tu rana a través de cinco carriles de coches y camiones y un río de troncos y tortugas que se hunden. Llena las cinco bocas del otro lado antes de que se acaben los 15 segundos de cada rana; cada ronda acelera el tráfico y acorta el tiempo. Tres vidas y mucho asfalto por delante.",
+    cat: "ARCADE",
+    cover: "cover-frogger",
+    color: "green",
+    best: 0,
+    plays: "0",
+  },
+  {
     id: "bloque-buster",
     title: "BLOQUE BUSTER",
     short: "Rebota la pelota y destruye muros de neón.",
