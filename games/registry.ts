@@ -10,6 +10,10 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
   asteroides: { factory: createAsteroids },
   tetris: { factory: createTetris, lives: false },
   arkanoid: { factory: createArkanoid },
-  snake: { factory: createSnake, lives: false },
+  snake: {
+    factory: createSnake,
+    lives: false,
+    touch: { keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" } },
+  },
   ranaria: { factory: createRanaria, skins: ["clasico", "neon", "retro"] },
 };

@@ -700,6 +700,38 @@ a { color: inherit; text-decoration: none; }
 .hud-actions { display: flex; gap: 10px; }
 .skin-picker { display: flex; gap: 6px; align-items: center; margin-right: 6px; }
 
+/* gamepad táctil (debajo del CRT) */
+.touch-pad {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  margin-top: 18px; padding: 8px 4px;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+.touch-pad.is-disabled { opacity: 0.4; }
+.touch-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  grid-template-areas: ". up ." "left . right" ". down .";
+}
+.touch-actions { display: flex; align-items: center; gap: 16px; }
+.touch-btn {
+  min-width: 56px; min-height: 56px; width: 100%; height: 100%;
+  border: 2px solid var(--cyan); border-radius: 6px;
+  background: var(--bg-2); color: var(--cyan);
+  font-family: var(--pixel); font-size: 16px;
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.touch-btn.up { grid-area: up; }
+.touch-btn.down { grid-area: down; }
+.touch-btn.left { grid-area: left; }
+.touch-btn.right { grid-area: right; }
+.touch-btn.pressed { background: rgba(0,245,255,0.18); box-shadow: 0 0 14px rgba(0,245,255,0.6); }
+.touch-btn.a, .touch-btn.b { width: 72px; height: 72px; border-radius: 50%; font-size: 9px; letter-spacing: 0.04em; }
+.touch-btn.a { border-color: var(--magenta); color: var(--magenta); }
+.touch-btn.a.pressed { background: rgba(255,0,110,0.18); box-shadow: 0 0 14px rgba(255,0,110,0.6); }
+.touch-btn.b { border-color: var(--yellow); color: var(--yellow); margin-top: 32px; }
+.touch-btn.b.pressed { background: rgba(245,255,0,0.18); box-shadow: 0 0 14px rgba(245,255,0,0.6); }
+
 .crt {
   position: relative;
   border-radius: 28px;
@@ -1030,6 +1062,8 @@ a { color: inherit; text-decoration: none; }
   .av-hall { padding: 0 16px; }
   .av-detail { padding: 0 16px; margin: 24px auto; }
   .av-player { padding: 0 16px 32px; }
+  .player-hud { padding: 12px; gap: 12px; }
+  .hud-actions, .skin-picker { flex-wrap: wrap; }
 }
 
 /* misc */
