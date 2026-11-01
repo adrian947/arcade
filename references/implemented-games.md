@@ -13,6 +13,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `caida` | CAÍDA | PUZZLE | pendiente (migración sin aplicar) | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -84,6 +85,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
 - **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
 - **Táctil:** ◀ ▶ mover · A LANZAR
+
+## 8. CAÍDA
+
+- **Ruta:** `/jugar/caida`
+- **Origen:** diseñado desde cero; convierte la entrada demo `caida` del catálogo (misma portada `.cover-tetro`)
+- **Descripción:** pozo de 10×18 con 8 piezas geométricas de 2 a 5 celdas (dúo, barra, ángulo, cuadro, te, escalón, gancho, cruz) en bolsa de 8. Se diferencia de TETRIS en dos cosas. (1) **Prensa:** el techo baja una fila cada `max(6, 16 − nivel)` s (barra PRENSA en el canvas) y cada línea limpiada la sube una; si baja sobre bloques, aplasta y termina la partida (si la pieza está pegada al techo, la bajada espera a que se fije). (2) **Cascada:** tras limpiar, cada grupo conectado sin apoyo cae entero hasta asentarse; si completa más líneas se encadenan (CADENA ×N). Cada 10 líneas sube el nivel (caída `max(70, 800 × 0,86^(nivel−1))` ms por fila). Pieza fantasma y vista previa de la siguiente. Sin vidas.
+- **Controles:** `←` `→` / `A` `D` mover · `↓` / `S` caída suave · `↑` / `X` / `W` rotar horario · `Z` rotar antihorario · `Espacio` caída libre
+- **Puntuación:** cada paso de cascada con `n` líneas = `100 × n² × cadena × nivel` · +1 por fila en caída suave · +2 por fila en caída libre
+- **Skins:** clasico, neon, retro (`games/caida/skins.ts`; en retro las 8 piezas se distinguen por tono + patrón; en neón las que comparten color van rayadas)
+- **Táctil:** ◀ ▶ mover (con repetición) · ▼ caída suave · ▲ rotar · A SOLTAR · B GIRAR (antihorario)
 
 ---
 
