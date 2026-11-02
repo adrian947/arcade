@@ -13,6 +13,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `serpentina` | SERPENTINA | ARCADE | pendiente (migración sin aplicar) | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -84,6 +85,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
 - **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
 - **Táctil:** ◀ ▶ mover · A LANZAR
+
+## 8. SERPENTINA
+
+- **Ruta:** `/jugar/serpentina`
+- **Origen:** diseñado desde cero; convierte la entrada demo `serpentina` del catálogo (misma portada `.cover-snake`)
+- **Descripción:** serpiente de luz con **giro libre** (no va por casillas, a diferencia de SNAKE): avanza sola y `←` `→` rotan su rumbo (3,4 rad/s). Arena de 768×568 con pared letal. Siempre hay 3 núcleos magenta; cada uno alarga la serpiente 24 px (empieza con 200 px) y la acelera (+3 px/s, de 130 a 280 px/s). Mecánica central, el **cerco**: si la cabeza pasa a menos de 30 px de su propio cuerpo (al menos 160 px atrás) sin tocarlo, el lazo se cierra y captura todo lo que encierra. Una línea punteada avisa cuando hay un cerco listo. Las **esporas** (amarillas, con púas) derivan rebotando en las paredes, matan al tocar la cabeza y solo se destruyen encerrándolas; hay `min(nivel, 6)` en juego y reaparecen a los 4 s. Cada 6 núcleos sube el nivel. Tocar la pared, una espora o el propio cuerpo termina la partida. Sin vidas.
+- **Controles:** `←` `→` / `A` `D` girar (mantener)
+- **Puntuación:** núcleo comido 10 × nivel · cerco: (20 por núcleo + 100 por espora) × nivel × multiplicador = objetos encerrados (tope ×5)
+- **Skins:** clasico, neon, retro (`games/serpentina/skins.ts`; en retro las esporas se distinguen por sus púas en cruz y el hueco central)
+- **Táctil:** ◀ ▶ girar (mantener)
 
 ---
 
