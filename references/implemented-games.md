@@ -13,6 +13,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `gloton` | GLOTÓN | ARCADE | pendiente (migración sin aplicar) | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -84,6 +85,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
 - **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
 - **Táctil:** ◀ ▶ mover · A LANZAR
+
+## 8. GLOTÓN
+
+- **Ruta:** `/jugar/gloton`
+- **Origen:** diseñado desde cero; convierte la entrada demo `gloton` del catálogo (misma portada `.cover-glot`)
+- **Descripción:** laberinto procedural de 25×17 casillas (distinto en cada nivel, semilla fija, sin callejones sin salida ni túneles) lleno de puntos. Cuatro espectros salen escalonados de un nido central y **no saben dónde estás**: patrullan y solo persiguen si te ven en línea recta (alcance 12 / 9 / 7 / 5 casillas) o te huelen a ≤ 1,5 casillas; si te pierden van al último punto donde te vieron ("!" al detectarte). Cada 10–14 s aparece una píldora en un lugar aleatorio lejos del glotón (dura 8 s); comerla asusta a los espectros unos segundos (6,5 s − 0,4 s por nivel, mínimo 3 s). Comer todos los puntos sube de nivel con un laberinto nuevo y espectros más rápidos. Tres vidas.
+- **Controles:** flechas o `WASD`, por pulsación (la dirección queda en cola hasta el próximo cruce; media vuelta inmediata)
+- **Puntuación:** punto 10 · píldora 50 · espectro asustado 150 × n (n-ésimo con la misma píldora) · nivel completo +500 × nivel · sigilo (nivel sin ser visto) +300 × nivel
+- **Skins:** clasico, neon, retro (`games/gloton/skins.ts`; en retro el espectro asustado se dibuja hueco)
+- **Táctil:** ▲ ▼ ◀ ▶ mover (simulan las flechas) · sin A/B · sin repeat
 
 ---
 
