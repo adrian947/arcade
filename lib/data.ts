@@ -132,8 +132,8 @@ export const GAMES: Game[] = [
     cat: "SHOOTER",
     cover: "cover-invaders",
     color: "green",
-    best: 54190,
-    plays: "18.0K",
+    best: 0,
+    plays: "0",
   },
   {
     id: "rocas",

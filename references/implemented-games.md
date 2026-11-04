@@ -13,6 +13,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `invasores` | INVASORES | SHOOTER | pendiente (migración sin aplicar) | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -84,6 +85,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
 - **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
 - **Táctil:** ◀ ▶ mover · A LANZAR
+
+## 8. INVASORES
+
+- **Ruta:** `/jugar/invasores`
+- **Origen:** diseñado desde cero; convierte la entrada demo `invasores` del catálogo (misma portada `.cover-invaders`)
+- **Descripción:** cañón abajo contra una formación de 10×5 (acorazados de 2 impactos, medusas y drones; glifos propios de 8×6). Distinto del shooter de formaciones clásico en dos cosas. (1) **Munición de chatarra:** cargador de 6 celdas; cada disparo gasta una y cada invasor destruido suelta un pixel de chatarra que, atrapado con el cañón, devuelve +1 (+2 si era acorazado); recarga pasiva +1 cada 3 s. Un disparo fallado corta la **racha** (×1…×5, multiplica los puntos). (2) **Formación viva:** ondula dentro del campo y baja de forma continua, más rápido cuantos menos quedan; silueta distinta por oleada (bloque, rombo, V, columnas, torres). Un rayo enemigo o que la formación toque la superficie (aterrizaje: retrocede 3 filas) restan una vida. Tres vidas.
+- **Controles:** `←` `→` / `A` `D` mover el cañón · `Espacio` / `↑` / `W` disparar (uno por pulsación)
+- **Puntuación:** acorazado 40 · medusa 20 · dron 10, × racha · chatarra atrapada 5 × racha · oleada limpia +250 × nivel
+- **Skins:** clasico, neon, retro (`games/invasores/skins.ts`; en retro los tipos se distinguen por silueta)
+- **Táctil:** ◀ ▶ mover · A FUEGO
 
 ---
 
