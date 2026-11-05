@@ -6,6 +6,7 @@ import { createSnake } from "@/games/snake/engine";
 import { createRanaria } from "@/games/ranaria/engine";
 import { createFrogger } from "@/games/frogger/engine";
 import { createBloqueBuster } from "@/games/bloque-buster/engine";
+import { createRocas } from "@/games/rocas/engine";
 
 // Juegos con motor real. Los que no figuran aquí usan la arena simulada.
 export const ENGINES: Partial<Record<string, EngineEntry>> = {
@@ -27,5 +28,13 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
     factory: createBloqueBuster,
     skins: ["clasico", "neon", "retro"],
     touch: { keys: { left: "ArrowLeft", right: "ArrowRight", a: "Space" }, labels: { a: "LANZAR" } },
+  },
+  rocas: {
+    factory: createRocas,
+    skins: ["clasico", "neon", "retro"],
+    touch: {
+      keys: { left: "ArrowLeft", right: "ArrowRight", down: "ArrowDown", a: "Space", b: "KeyS" },
+      labels: { a: "DISPARO", b: "FRENO" },
+    },
   },
 };
