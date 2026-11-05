@@ -13,6 +13,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `rocas` | ROCAS | SHOOTER | pendiente (migración sin aplicar) | [19](../specs/19-juego-rocas.md) | `games/rocas/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -84,6 +85,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
 - **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
 - **Táctil:** ◀ ▶ mover · A LANZAR
+
+## 8. ROCAS
+
+- **Ruta:** `/jugar/rocas`
+- **Origen:** diseñado desde cero; convierte la entrada demo `rocas` del catálogo (misma portada `.cover-rocas`)
+- **Descripción:** arena cerrada de 800×600 donde todo rebota en las paredes (sin bordes envolventes), distinta de ASTEROIDES en dos cosas. (1) **Propulsión por retroceso:** la nave no tiene propulsor; cada disparo la empuja 42 px/s en sentido contrario al cañón (tope 300 px/s) y `↓` frena. (2) **Fragmentos que se re-fusionan:** al partir una roca (grande → 2 medianas → 2 pequeñas) los fragmentos quedan enlazados; a los 2,5 s aparece un cable punteado, a los 4 s se atraen y, si se tocan, se funden en la roca anterior (sin puntos). Destruir ambos hermanos con ≤ 1,5 s de diferencia da bonus PAR. Desde el nivel 2 cruzan OVNIs por la franja superior disparando hacia la nave. Oleadas de `min(9, 2 + nivel)` rocas grandes. Tres vidas; invulnerable 2,5 s al reaparecer.
+- **Controles:** `←` `→` / `A` `D` rotar · `Espacio` disparar (mantener = ráfaga, y moverse por retroceso) · `↓` / `S` frenar
+- **Puntuación:** roca grande 10 · mediana 30 · pequeña 60 · PAR de medianas +100 · PAR de pequeñas +200 · OVNI 300
+- **Skins:** clasico, neon, retro (`games/rocas/skins.ts`; en retro las balas del OVNI son cuadros huecos para distinguirlas de las propias)
+- **Táctil:** ◀ ▶ rotar · ▼ frenar · A DISPARO · B FRENO
 
 ---
 
