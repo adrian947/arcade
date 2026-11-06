@@ -13,6 +13,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `duelo-pixel` | DUELO PIXEL | VERSUS | pendiente (migración sin aplicar) | [20](../specs/20-juego-duelo-pixel.md) | `games/duelo-pixel/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -84,6 +85,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** grupo de `n` bloques = `10 × n × min(n, 10)` · nivel completo +500 × nivel
 - **Skins:** clasico, neon, retro (`games/bloque-buster/skins.ts`; en retro los 4 colores se distinguen también por patrón)
 - **Táctil:** ◀ ▶ mover · A LANZAR
+
+## 8. DUELO PIXEL
+
+- **Ruta:** `/jugar/duelo-pixel`
+- **Origen:** diseñado desde cero; convierte la entrada demo `duelo-pixel` del catálogo (misma portada `.cover-duelo`)
+- **Descripción:** duelo de dos paletas verticales en un campo de 800×512 con bandas que rebotan la bola. Dos mecánicas propias: (1) **efecto**: la velocidad de la paleta al golpear curva la trayectoria de la bola, que la CPU no predice; (2) **remate**: ventana de 170 ms que, si la bola toca la paleta, la acelera un 35 % y duplica el punto si gana. Menú en el canvas: **1 jugador** = escalera de duelos a 5 puntos contra una CPU cada vez más rápida y precisa (PRNG por nivel); ganar un duelo sube el nivel, perderlo cuesta una vida y repite el rival. Tres vidas. **2 jugadores** = exhibición local a 7 puntos que termina con score 0 (no puntúa).
+- **Controles:** menú `Espacio`/`1` solitario · `2` dos jugadores. Solitario: `↑` `↓` / `W` `S` mover · `Espacio` / `D` remate. Dos jugadores: J1 `W` `S` + `D` · J2 `↑` `↓` + `←`
+- **Puntuación:** punto ganado `100 × nivel + 10 × min(golpes del peloteo, 20)` (×2 si lo gana un remate) · duelo ganado `+500 × nivel + 100 × (5 − puntos de la CPU)`
+- **Skins:** clasico, neon, retro (`games/duelo-pixel/skins.ts`; en retro la paleta rival es hueca con muescas)
+- **Táctil:** ▲ ▼ mover · A REMATE (también empieza el modo solitario; el modo 2 jugadores requiere teclado)
 
 ---
 
