@@ -154,8 +154,8 @@ export const GAMES: Game[] = [
     cat: "VERSUS",
     cover: "cover-duelo",
     color: "cyan",
-    best: 24,
-    plays: "4.2K",
+    best: 0,
+    plays: "0",
   },
 ];
 
