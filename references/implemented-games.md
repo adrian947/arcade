@@ -18,6 +18,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 8 | `gloton` | GLOTÓN | ARCADE | pendiente (migración sin aplicar) | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 8 | `invasores` | INVASORES | SHOOTER | pendiente (migración sin aplicar) | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 8 | `rocas` | ROCAS | SHOOTER | pendiente (migración sin aplicar) | [19](../specs/19-juego-rocas.md) | `games/rocas/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `duelo-pixel` | DUELO PIXEL | VERSUS | pendiente (migración sin aplicar) | [20](../specs/20-juego-duelo-pixel.md) | `games/duelo-pixel/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -135,6 +136,15 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** roca grande 10 · mediana 30 · pequeña 60 · PAR de medianas +100 · PAR de pequeñas +200 · OVNI 300
 - **Skins:** clasico, neon, retro (`games/rocas/skins.ts`; en retro las balas del OVNI son cuadros huecos para distinguirlas de las propias)
 - **Táctil:** ◀ ▶ rotar · ▼ frenar · A DISPARO · B FRENO
+## 8. DUELO PIXEL
+
+- **Ruta:** `/jugar/duelo-pixel`
+- **Origen:** diseñado desde cero; convierte la entrada demo `duelo-pixel` del catálogo (misma portada `.cover-duelo`)
+- **Descripción:** duelo de dos paletas verticales en un campo de 800×512 con bandas que rebotan la bola. Dos mecánicas propias: (1) **efecto**: la velocidad de la paleta al golpear curva la trayectoria de la bola, que la CPU no predice; (2) **remate**: ventana de 170 ms que, si la bola toca la paleta, la acelera un 35 % y duplica el punto si gana. Menú en el canvas: **1 jugador** = escalera de duelos a 5 puntos contra una CPU cada vez más rápida y precisa (PRNG por nivel); ganar un duelo sube el nivel, perderlo cuesta una vida y repite el rival. Tres vidas. **2 jugadores** = exhibición local a 7 puntos que termina con score 0 (no puntúa).
+- **Controles:** menú `Espacio`/`1` solitario · `2` dos jugadores. Solitario: `↑` `↓` / `W` `S` mover · `Espacio` / `D` remate. Dos jugadores: J1 `W` `S` + `D` · J2 `↑` `↓` + `←`
+- **Puntuación:** punto ganado `100 × nivel + 10 × min(golpes del peloteo, 20)` (×2 si lo gana un remate) · duelo ganado `+500 × nivel + 100 × (5 − puntos de la CPU)`
+- **Skins:** clasico, neon, retro (`games/duelo-pixel/skins.ts`; en retro la paleta rival es hueca con muescas)
+- **Táctil:** ▲ ▼ mover · A REMATE (también empieza el modo solitario; el modo 2 jugadores requiere teclado)
 
 ---
 
