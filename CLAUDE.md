@@ -10,6 +10,7 @@ Arcade Vault — a browser-based arcade game platform (retro neon/CRT look, UI t
 
 Playable games with real engines: **ASTEROIDES**, **TETRIS**, **ARKANOID**, **SNAKE**, **RANARIA**, **FROGGER**, **BLOQUE BUSTER**, **SERPENTINA**. The rest of the catalog in `lib/data.ts` runs a simulated arena (demo).
 Playable games with real engines: **ASTEROIDES**, **TETRIS**, **ARKANOID**, **SNAKE**, **RANARIA**, **FROGGER**, **BLOQUE BUSTER**, **CAÍDA**. The rest of the catalog in `lib/data.ts` runs a simulated arena (demo).
+Playable games with real engines: **ASTEROIDES**, **TETRIS**, **ARKANOID**, **SNAKE**, **RANARIA**, **FROGGER**, **BLOQUE BUSTER**, **GLOTÓN**. The rest of the catalog in `lib/data.ts` runs a simulated arena (demo).
 
 For details on implemented games (ids, specs, engines, controls, scoring, origin), read `references/implemented-games.md` when needed. Keep it updated when a new game is added.
 
@@ -68,6 +69,7 @@ Copy `.env.example` to `.env.local` (all `.env*` except `.env.example` are gitig
 - `games/registry.ts` — `ENGINES` map `id → { factory, lives? }`. `lives: false` hides the Lives stat in the HUD (tetris, snake). `skins?: SkinId[]` declares implemented skins; with ≥ 2, `/jugar` shows the CLÁSICO / NEÓN / RETRO selector (`games/skins.ts`), remembered per game in `localStorage` (`av:skin:<gameId>`, hook `lib/use-skin.ts`). Pattern: `games/ranaria/skins.ts`. `touch?: TouchControls` (`{ keys: { up|down|left|right|a|b → KeyboardEvent.code }, labels?, repeat? }`) makes the game playable on touch devices with the gamepad below the CRT; without it, touch devices show "REQUIERE TECLADO". Pattern: `snake`. Ids not in the map use the simulated arena.
 - One folder per game: `asteroids/`, `tetris/`, `arkanoid/` (`levels.ts`, `sprites.ts`), `snake/` (`sprites.ts`), `ranaria/`, `frogger/`, `bloque-buster/`, `serpentina/` (each with `skins.ts`). Assets in `public/games/<id>/`.
 - One folder per game: `asteroids/`, `tetris/`, `arkanoid/` (`levels.ts`, `sprites.ts`), `snake/` (`sprites.ts`), `ranaria/`, `frogger/`, `bloque-buster/`, `caida/` (each with `skins.ts`). Assets in `public/games/<id>/`.
+- One folder per game: `asteroids/`, `tetris/`, `arkanoid/` (`levels.ts`, `sprites.ts`), `snake/` (`sprites.ts`), `ranaria/`, `frogger/`, `bloque-buster/`, `gloton/` (each with `skins.ts`). Assets in `public/games/<id>/`.
 - Platform owns HUD (score/lives/level), pause (button, `P`/`Esc`, auto-pause on tab hidden) and game-over/save UI — engines must not draw those nor bind `P`/`Esc`. Engines read colors from CSS tokens (see `readPalette` pattern in `games/asteroids/engine.ts`).
 
 Adding a real game touches: engine in `games/<id>/`, `games/registry.ts`, entry in `lib/data.ts`, `.cover-<id>` in `globals.css`, and a migration inserting the row into `public.games`.
@@ -80,6 +82,7 @@ Adding a real game touches: engine in `games/<id>/`, `games/registry.ts`, entry 
 
 Features are planned as specs in `specs/NN-slug.md` (status words: `Borrador` → `Aprobado` → `Implementado`), then implemented on a branch `spec-NN-slug` and merged via PR. Implemented so far: 01 visual MVP, 02 landing + `/juegos`, 03 about + Resend contact, 04 Supabase auth + ranking, 05 Asteroides, 06 `games` table + FK, 07 Tetris, 08 Arkanoid, 09 Snake, 10 Ranaria, 11 sistema de skins, 12 controles táctiles, 13 Frogger, 14 Bloque Buster, 16 Serpentina.
 Features are planned as specs in `specs/NN-slug.md` (status words: `Borrador` → `Aprobado` → `Implementado`), then implemented on a branch `spec-NN-slug` and merged via PR. Implemented so far: 01 visual MVP, 02 landing + `/juegos`, 03 about + Resend contact, 04 Supabase auth + ranking, 05 Asteroides, 06 `games` table + FK, 07 Tetris, 08 Arkanoid, 09 Snake, 10 Ranaria, 11 sistema de skins, 12 controles táctiles, 13 Frogger, 14 Bloque Buster, 15 Caída.
+Features are planned as specs in `specs/NN-slug.md` (status words: `Borrador` → `Aprobado` → `Implementado`), then implemented on a branch `spec-NN-slug` and merged via PR. Implemented so far: 01 visual MVP, 02 landing + `/juegos`, 03 about + Resend contact, 04 Supabase auth + ranking, 05 Asteroides, 06 `games` table + FK, 07 Tetris, 08 Arkanoid, 09 Snake, 10 Ranaria, 11 sistema de skins, 12 controles táctiles, 13 Frogger, 14 Bloque Buster, 17 Glotón.
 
 Project skills (`.claude/skills/`, user-invoked only):
 
