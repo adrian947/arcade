@@ -9,6 +9,7 @@ import { createBloqueBuster } from "@/games/bloque-buster/engine";
 import { createSerpentina } from "@/games/serpentina/engine";
 import { createCaida } from "@/games/caida/engine";
 import { createGloton } from "@/games/gloton/engine";
+import { createInvasores } from "@/games/invasores/engine";
 
 // Juegos con motor real. Los que no figuran aquí usan la arena simulada.
 export const ENGINES: Partial<Record<string, EngineEntry>> = {
@@ -51,5 +52,10 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
     factory: createGloton,
     skins: ["clasico", "neon", "retro"],
     touch: { keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" } },
+  },
+  invasores: {
+    factory: createInvasores,
+    skins: ["clasico", "neon", "retro"],
+    touch: { keys: { left: "ArrowLeft", right: "ArrowRight", a: "Space" }, labels: { a: "FUEGO" } },
   },
 };

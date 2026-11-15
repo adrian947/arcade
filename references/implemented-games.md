@@ -16,6 +16,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 8 | `serpentina` | SERPENTINA | ARCADE | pendiente (migración sin aplicar) | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
 | 8 | `caida` | CAÍDA | PUZZLE | pendiente (migración sin aplicar) | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
 | 8 | `gloton` | GLOTÓN | ARCADE | pendiente (migración sin aplicar) | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `invasores` | INVASORES | SHOOTER | pendiente (migración sin aplicar) | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -115,6 +116,15 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** punto 10 · píldora 50 · espectro asustado 150 × n (n-ésimo con la misma píldora) · nivel completo +500 × nivel · sigilo (nivel sin ser visto) +300 × nivel
 - **Skins:** clasico, neon, retro (`games/gloton/skins.ts`; en retro el espectro asustado se dibuja hueco)
 - **Táctil:** ▲ ▼ ◀ ▶ mover (simulan las flechas) · sin A/B · sin repeat
+## 8. INVASORES
+
+- **Ruta:** `/jugar/invasores`
+- **Origen:** diseñado desde cero; convierte la entrada demo `invasores` del catálogo (misma portada `.cover-invaders`)
+- **Descripción:** cañón abajo contra una formación de 10×5 (acorazados de 2 impactos, medusas y drones; glifos propios de 8×6). Distinto del shooter de formaciones clásico en dos cosas. (1) **Munición de chatarra:** cargador de 6 celdas; cada disparo gasta una y cada invasor destruido suelta un pixel de chatarra que, atrapado con el cañón, devuelve +1 (+2 si era acorazado); recarga pasiva +1 cada 3 s. Un disparo fallado corta la **racha** (×1…×5, multiplica los puntos). (2) **Formación viva:** ondula dentro del campo y baja de forma continua, más rápido cuantos menos quedan; silueta distinta por oleada (bloque, rombo, V, columnas, torres). Un rayo enemigo o que la formación toque la superficie (aterrizaje: retrocede 3 filas) restan una vida. Tres vidas.
+- **Controles:** `←` `→` / `A` `D` mover el cañón · `Espacio` / `↑` / `W` disparar (uno por pulsación)
+- **Puntuación:** acorazado 40 · medusa 20 · dron 10, × racha · chatarra atrapada 5 × racha · oleada limpia +250 × nivel
+- **Skins:** clasico, neon, retro (`games/invasores/skins.ts`; en retro los tipos se distinguen por silueta)
+- **Táctil:** ◀ ▶ mover · A FUEGO
 
 ---
 
