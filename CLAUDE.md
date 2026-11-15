@@ -62,6 +62,10 @@ Copy `.env.example` to `.env.local` (all `.env*` except `.env.example` are gitig
 - View `leaderboard` (`security_invoker`): best score per user per game.
 - Public read on all tables; one migration per new game (`insert into public.games …`).
 
+### Security
+
+`security/checklist.md` is the living security checklist (RLS, Auth password/rate-limit settings, advisors): `[x]` applied with value + date, `[-]` not applicable with reason. Security headers for every route (`nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`) live in `next.config.ts`; CSP and HSTS are not set yet. Supabase Auth settings (min password 8, sign-up/sign-in rate limit 10 / 5 min / IP) are applied by hand in the dashboard. Re-check `get_advisors` (security) after schema changes; the only accepted warning is `auth_leaked_password_protection` (requires Pro plan).
+
 ### Game engines (`games/`)
 
 - `games/types.ts` — engine contract: `GameFactory(canvas, { onStats, onGameOver }, options?: { skin })` returns `{ pause, resume, end, destroy, setSkin? }`. `SkinId = "clasico" | "neon" | "retro"` (default `clasico`); `setSkin` applies a skin live and redraws even when paused. `end()` returns score without firing `onGameOver`; `destroy()` is idempotent and must cancel rAF + remove listeners. Engines listen to keyboard on `window` by `e.code` and must not filter `e.isTrusted`: on touch devices the platform gamepad (`components/touch-gamepad.tsx`) dispatches synthetic `KeyboardEvent`s.
@@ -94,6 +98,7 @@ Project subagents (`.claude/agents/`):
 - `game-jam` — designs ONE original game from a theme + assigned angle and writes its spec using `.claude/skills/nuevo-juego/game-spec-template.md`. Non-interactive (records assumptions in Decisiones). Launched in pairs by `/game-jam`; subagents can't spawn subagents, so orchestration lives in the skill.
 - `skin-designer` — ensures every real game has ≥ 3 skins (`clasico` default, `neon`, `retro`). Point it at a game to add missing skins (edits only `games/<carpeta>/**`, its registry line and implemented-games), or ask for an audit table. Requires the platform skin infrastructure (selector in `/jugar` + `localStorage` + skin passed to the engine), which comes from its own spec; stops if it's missing.
 - `mobile-porter` — makes ONE real game playable on touch devices: reads its engine's key handling (read-only) and declares its touch mapping (D-pad + A/B → `KeyboardEvent.code`) in its `games/registry.ts` line + implemented-games. Requires the platform touch infrastructure (on-screen gamepad that dispatches synthetic key events + `touch` field in `EngineEntry`), which comes from its own spec; stops if it's missing.
+- `security-auditor` — read-only security audit: Supabase (advisors, RLS, policies, exposed `SECURITY DEFINER` functions, Auth settings as manual checks) + app (headers in `next.config.ts`, password validation, username guard, hardcoded secrets, `.gitignore`, `npm audit`, server-only env vars, inserts tied to the user). Treats `[-]` items in `security/checklist.md` as accepted. Writes only `security/audit-log.md`.
 
 ## Diseño UI
 

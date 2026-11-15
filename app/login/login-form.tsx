@@ -15,6 +15,7 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "" }: Props) {
   const [email, setEmail] = useState(defaultEmail);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const [oauthBusy, setOauthBusy] = useState<OAuthProvider | null>(null);
 
   // Vuelta del proveedor OAuth con error (ej. el jugador canceló el consentimiento).
@@ -90,7 +91,23 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "" }: Props) {
           </div>
           <div className="field">
             <label>Contraseña</label>
-            <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="••••••••" autoComplete={tab === "in" ? "current-password" : "new-password"} minLength={tab === "up" ? MIN_PASSWORD : undefined} required />
+            <div className="pass-wrap">
+              <input type={showPass ? "text" : "password"} value={pass} onChange={(e) => setPass(e.target.value)} placeholder="••••••••" autoComplete={tab === "in" ? "current-password" : "new-password"} minLength={tab === "up" ? MIN_PASSWORD : undefined} required />
+              <button
+                type="button"
+                className="pass-toggle"
+                onClick={() => setShowPass((v) => !v)}
+                aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+                aria-pressed={showPass}
+                title={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
+                  <circle cx="12" cy="12" r="3" />
+                  {showPass && <line x1="3" y1="3" x2="21" y2="21" />}
+                </svg>
+              </button>
+            </div>
           </div>
 
           {error && (
