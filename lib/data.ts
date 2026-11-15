@@ -143,8 +143,8 @@ export const GAMES: Game[] = [
     cat: "SHOOTER",
     cover: "cover-rocas",
     color: "yellow",
-    best: 41200,
-    plays: "15.6K",
+    best: 0,
+    plays: "0",
   },
   {
     id: "duelo-pixel",
