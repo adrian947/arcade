@@ -15,6 +15,7 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 | 8 | `serpentina` | SERPENTINA | ARCADE | pendiente (migración sin aplicar) | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
 | 8 | `caida` | CAÍDA | PUZZLE | pendiente (migración sin aplicar) | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `gloton` | GLOTÓN | ARCADE | pendiente (migración sin aplicar) | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -105,6 +106,15 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** cada paso de cascada con `n` líneas = `100 × n² × cadena × nivel` · +1 por fila en caída suave · +2 por fila en caída libre
 - **Skins:** clasico, neon, retro (`games/caida/skins.ts`; en retro las 8 piezas se distinguen por tono + patrón; en neón las que comparten color van rayadas)
 - **Táctil:** ◀ ▶ mover (con repetición) · ▼ caída suave · ▲ rotar · A SOLTAR · B GIRAR (antihorario)
+## 8. GLOTÓN
+
+- **Ruta:** `/jugar/gloton`
+- **Origen:** diseñado desde cero; convierte la entrada demo `gloton` del catálogo (misma portada `.cover-glot`)
+- **Descripción:** laberinto procedural de 25×17 casillas (distinto en cada nivel, semilla fija, sin callejones sin salida ni túneles) lleno de puntos. Cuatro espectros salen escalonados de un nido central y **no saben dónde estás**: patrullan y solo persiguen si te ven en línea recta (alcance 12 / 9 / 7 / 5 casillas) o te huelen a ≤ 1,5 casillas; si te pierden van al último punto donde te vieron ("!" al detectarte). Cada 10–14 s aparece una píldora en un lugar aleatorio lejos del glotón (dura 8 s); comerla asusta a los espectros unos segundos (6,5 s − 0,4 s por nivel, mínimo 3 s). Comer todos los puntos sube de nivel con un laberinto nuevo y espectros más rápidos. Tres vidas.
+- **Controles:** flechas o `WASD`, por pulsación (la dirección queda en cola hasta el próximo cruce; media vuelta inmediata)
+- **Puntuación:** punto 10 · píldora 50 · espectro asustado 150 × n (n-ésimo con la misma píldora) · nivel completo +500 × nivel · sigilo (nivel sin ser visto) +300 × nivel
+- **Skins:** clasico, neon, retro (`games/gloton/skins.ts`; en retro el espectro asustado se dibuja hueco)
+- **Táctil:** ▲ ▼ ◀ ▶ mover (simulan las flechas) · sin A/B · sin repeat
 
 ---
 
