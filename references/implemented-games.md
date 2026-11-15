@@ -12,13 +12,13 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 4 | `snake` | SNAKE | ARCADE | 2026-10-10 | [09](../specs/09-juego-snake.md) | `games/snake/engine.ts` | No | clasico | Sí | 2 | 1 | 70 |
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 8 | `serpentina` | SERPENTINA | ARCADE | pendiente (migración sin aplicar) | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
-| 9 | `caida` | CAÍDA | PUZZLE | pendiente (migración sin aplicar) | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
-| 10 | `gloton` | GLOTÓN | ARCADE | pendiente (migración sin aplicar) | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 11 | `invasores` | INVASORES | SHOOTER | pendiente (migración sin aplicar) | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 12 | `rocas` | ROCAS | SHOOTER | pendiente (migración sin aplicar) | [19](../specs/19-juego-rocas.md) | `games/rocas/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 13 | `duelo-pixel` | DUELO PIXEL | VERSUS | pendiente (migración sin aplicar) | [20](../specs/20-juego-duelo-pixel.md) | `games/duelo-pixel/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | 2026-10-31 | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `serpentina` | SERPENTINA | ARCADE | 2026-11-15 | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
+| 9 | `caida` | CAÍDA | PUZZLE | 2026-11-15 | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
+| 10 | `gloton` | GLOTÓN | ARCADE | 2026-11-15 | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 11 | `invasores` | INVASORES | SHOOTER | 2026-11-15 | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 12 | `rocas` | ROCAS | SHOOTER | 2026-11-15 | [19](../specs/19-juego-rocas.md) | `games/rocas/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 13 | `duelo-pixel` | DUELO PIXEL | VERSUS | 2026-11-15 | [20](../specs/20-juego-duelo-pixel.md) | `games/duelo-pixel/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
