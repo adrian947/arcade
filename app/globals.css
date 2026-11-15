@@ -984,6 +984,17 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 140ms, box-shadow 140ms;
 }
 .field input:focus { border-color: var(--cyan); box-shadow: 0 0 12px rgba(0,245,255,0.35); }
+.pass-wrap { position: relative; display: flex; }
+.pass-wrap input { flex: 1; min-width: 0; padding-right: 44px; }
+.pass-toggle {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 44px;
+  display: grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
+  color: var(--ink-faint);
+  transition: color 140ms, filter 140ms;
+}
+.pass-toggle:hover, .pass-toggle[aria-pressed="true"] { color: var(--cyan); filter: drop-shadow(0 0 4px rgba(0,245,255,0.6)); }
+.pass-toggle:focus-visible { outline: 1px solid var(--cyan); outline-offset: -4px; }
 .auth-divider {
   display: flex; align-items: center; gap: 12px;
   margin: 16px 0;
