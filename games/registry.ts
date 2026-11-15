@@ -7,6 +7,7 @@ import { createRanaria } from "@/games/ranaria/engine";
 import { createFrogger } from "@/games/frogger/engine";
 import { createBloqueBuster } from "@/games/bloque-buster/engine";
 import { createSerpentina } from "@/games/serpentina/engine";
+import { createCaida } from "@/games/caida/engine";
 
 // Juegos con motor real. Los que no figuran aquí usan la arena simulada.
 export const ENGINES: Partial<Record<string, EngineEntry>> = {
@@ -34,5 +35,15 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
     lives: false,
     skins: ["clasico", "neon", "retro"],
     touch: { keys: { left: "ArrowLeft", right: "ArrowRight" } },
+  },
+  caida: {
+    factory: createCaida,
+    lives: false,
+    skins: ["clasico", "neon", "retro"],
+    touch: {
+      keys: { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight", a: "Space", b: "KeyZ" },
+      labels: { a: "SOLTAR", b: "GIRAR" },
+      repeat: ["left", "right"],
+    },
   },
 };
