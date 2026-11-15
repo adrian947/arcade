@@ -12,12 +12,13 @@ Los demás títulos del catálogo de `lib/data.ts` todavía usan la arena simula
 | 4 | `snake` | SNAKE | ARCADE | 2026-10-10 | [09](../specs/09-juego-snake.md) | `games/snake/engine.ts` | No | clasico | Sí | 2 | 1 | 70 |
 | 5 | `ranaria` | RANARIA | ARCADE | 2026-10-11 | [10](../specs/10-ranaria-ranaria.md) | `games/ranaria/engine.ts` | Sí | clasico, neon, retro | No | 0 | 0 | — |
 | 6 | `frogger` | FROGGER | ARCADE | 2026-10-31 | [13](../specs/13-juego-frogger.md) | `games/frogger/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | pendiente (migración sin aplicar) | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 8 | `serpentina` | SERPENTINA | ARCADE | pendiente (migración sin aplicar) | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
-| 8 | `caida` | CAÍDA | PUZZLE | pendiente (migración sin aplicar) | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
-| 8 | `gloton` | GLOTÓN | ARCADE | pendiente (migración sin aplicar) | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 8 | `invasores` | INVASORES | SHOOTER | pendiente (migración sin aplicar) | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
-| 8 | `rocas` | ROCAS | SHOOTER | pendiente (migración sin aplicar) | [19](../specs/19-juego-rocas.md) | `games/rocas/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 7 | `bloque-buster` | BLOQUE BUSTER | ARCADE | 2026-10-31 | [14](../specs/14-juego-bloque-buster.md) | `games/bloque-buster/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 8 | `serpentina` | SERPENTINA | ARCADE | 2026-11-15 | [16](../specs/16-juego-serpentina.md) | `games/serpentina/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
+| 9 | `caida` | CAÍDA | PUZZLE | 2026-11-15 | [15](../specs/15-juego-caida.md) | `games/caida/engine.ts` | No | clasico, neon, retro | Sí | 0 | 0 | — |
+| 10 | `gloton` | GLOTÓN | ARCADE | 2026-11-15 | [17](../specs/17-juego-gloton.md) | `games/gloton/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 11 | `invasores` | INVASORES | SHOOTER | 2026-11-15 | [18](../specs/18-juego-invasores.md) | `games/invasores/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 12 | `rocas` | ROCAS | SHOOTER | 2026-11-15 | [19](../specs/19-juego-rocas.md) | `games/rocas/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
+| 13 | `duelo-pixel` | DUELO PIXEL | VERSUS | 2026-11-15 | [20](../specs/20-juego-duelo-pixel.md) | `games/duelo-pixel/engine.ts` | Sí | clasico, neon, retro | Sí | 0 | 0 | — |
 
 > Las estadísticas (partidas, jugadores, récord) son una foto del 2026-10-11 y cambian con cada partida guardada.
 
@@ -99,7 +100,8 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** núcleo comido 10 × nivel · cerco: (20 por núcleo + 100 por espora) × nivel × multiplicador = objetos encerrados (tope ×5)
 - **Skins:** clasico, neon, retro (`games/serpentina/skins.ts`; en retro las esporas se distinguen por sus púas en cruz y el hueco central)
 - **Táctil:** ◀ ▶ girar (mantener)
-## 8. CAÍDA
+
+## 9. CAÍDA
 
 - **Ruta:** `/jugar/caida`
 - **Origen:** diseñado desde cero; convierte la entrada demo `caida` del catálogo (misma portada `.cover-tetro`)
@@ -108,7 +110,8 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** cada paso de cascada con `n` líneas = `100 × n² × cadena × nivel` · +1 por fila en caída suave · +2 por fila en caída libre
 - **Skins:** clasico, neon, retro (`games/caida/skins.ts`; en retro las 8 piezas se distinguen por tono + patrón; en neón las que comparten color van rayadas)
 - **Táctil:** ◀ ▶ mover (con repetición) · ▼ caída suave · ▲ rotar · A SOLTAR · B GIRAR (antihorario)
-## 8. GLOTÓN
+
+## 10. GLOTÓN
 
 - **Ruta:** `/jugar/gloton`
 - **Origen:** diseñado desde cero; convierte la entrada demo `gloton` del catálogo (misma portada `.cover-glot`)
@@ -117,7 +120,8 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** punto 10 · píldora 50 · espectro asustado 150 × n (n-ésimo con la misma píldora) · nivel completo +500 × nivel · sigilo (nivel sin ser visto) +300 × nivel
 - **Skins:** clasico, neon, retro (`games/gloton/skins.ts`; en retro el espectro asustado se dibuja hueco)
 - **Táctil:** ▲ ▼ ◀ ▶ mover (simulan las flechas) · sin A/B · sin repeat
-## 8. INVASORES
+
+## 11. INVASORES
 
 - **Ruta:** `/jugar/invasores`
 - **Origen:** diseñado desde cero; convierte la entrada demo `invasores` del catálogo (misma portada `.cover-invaders`)
@@ -126,7 +130,8 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** acorazado 40 · medusa 20 · dron 10, × racha · chatarra atrapada 5 × racha · oleada limpia +250 × nivel
 - **Skins:** clasico, neon, retro (`games/invasores/skins.ts`; en retro los tipos se distinguen por silueta)
 - **Táctil:** ◀ ▶ mover · A FUEGO
-## 8. ROCAS
+
+## 12. ROCAS
 
 - **Ruta:** `/jugar/rocas`
 - **Origen:** diseñado desde cero; convierte la entrada demo `rocas` del catálogo (misma portada `.cover-rocas`)
@@ -135,6 +140,16 @@ En todos los juegos, `P` / `Esc` pausan (la plataforma se encarga) y la pestaña
 - **Puntuación:** roca grande 10 · mediana 30 · pequeña 60 · PAR de medianas +100 · PAR de pequeñas +200 · OVNI 300
 - **Skins:** clasico, neon, retro (`games/rocas/skins.ts`; en retro las balas del OVNI son cuadros huecos para distinguirlas de las propias)
 - **Táctil:** ◀ ▶ rotar · ▼ frenar · A DISPARO · B FRENO
+
+## 13. DUELO PIXEL
+
+- **Ruta:** `/jugar/duelo-pixel`
+- **Origen:** diseñado desde cero; convierte la entrada demo `duelo-pixel` del catálogo (misma portada `.cover-duelo`)
+- **Descripción:** duelo de dos paletas verticales en un campo de 800×512 con bandas que rebotan la bola. Dos mecánicas propias: (1) **efecto**: la velocidad de la paleta al golpear curva la trayectoria de la bola, que la CPU no predice; (2) **remate**: ventana de 170 ms que, si la bola toca la paleta, la acelera un 35 % y duplica el punto si gana. Menú en el canvas: **1 jugador** = escalera de duelos a 5 puntos contra una CPU cada vez más rápida y precisa (PRNG por nivel); ganar un duelo sube el nivel, perderlo cuesta una vida y repite el rival. Tres vidas. **2 jugadores** = exhibición local a 7 puntos que termina con score 0 (no puntúa).
+- **Controles:** menú `Espacio`/`1` solitario · `2` dos jugadores. Solitario: `↑` `↓` / `W` `S` mover · `Espacio` / `D` remate. Dos jugadores: J1 `W` `S` + `D` · J2 `↑` `↓` + `←`
+- **Puntuación:** punto ganado `100 × nivel + 10 × min(golpes del peloteo, 20)` (×2 si lo gana un remate) · duelo ganado `+500 × nivel + 100 × (5 − puntos de la CPU)`
+- **Skins:** clasico, neon, retro (`games/duelo-pixel/skins.ts`; en retro la paleta rival es hueca con muescas)
+- **Táctil:** ▲ ▼ mover · A REMATE (también empieza el modo solitario; el modo 2 jugadores requiere teclado)
 
 ---
 

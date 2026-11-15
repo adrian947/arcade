@@ -11,6 +11,7 @@ import { createCaida } from "@/games/caida/engine";
 import { createGloton } from "@/games/gloton/engine";
 import { createInvasores } from "@/games/invasores/engine";
 import { createRocas } from "@/games/rocas/engine";
+import { createDueloPixel } from "@/games/duelo-pixel/engine";
 
 // Juegos con motor real. Los que no figuran aquí usan la arena simulada.
 export const ENGINES: Partial<Record<string, EngineEntry>> = {
@@ -66,5 +67,10 @@ export const ENGINES: Partial<Record<string, EngineEntry>> = {
       keys: { left: "ArrowLeft", right: "ArrowRight", down: "ArrowDown", a: "Space", b: "KeyS" },
       labels: { a: "DISPARO", b: "FRENO" },
     },
+  },
+  "duelo-pixel": {
+    factory: createDueloPixel,
+    skins: ["clasico", "neon", "retro"],
+    touch: { keys: { up: "ArrowUp", down: "ArrowDown", a: "Space" }, labels: { a: "REMATE" } },
   },
 };
