@@ -1,20 +1,48 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { MIN_PASSWORD, useUser } from "@/lib/user";
+import { MIN_PASSWORD, useUser, type OAuthProvider } from "@/lib/user";
 
 type Props = { defaultEmail?: string; defaultPassword?: string };
 
 export function LoginForm({ defaultEmail = "", defaultPassword = "" }: Props) {
   const router = useRouter();
-  const { signIn, signUp } = useUser();
+  const { user: current, loading, signIn, signUp, signInWithProvider } = useUser();
   const [tab, setTab] = useState<"in" | "up">("in");
   const [user, setUser] = useState("");
   const [pass, setPass] = useState(defaultPassword);
   const [email, setEmail] = useState(defaultEmail);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [oauthBusy, setOauthBusy] = useState<OAuthProvider | null>(null);
+
+  // Vuelta del proveedor OAuth con error (ej. el jugador canceló el consentimiento).
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const failed = ["error", "error_description"].some((k) => query.has(k) || hash.has(k));
+    if (!failed) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- la URL (incluido el hash) solo existe en el cliente
+    setError("NO SE PUDO INICIAR SESIÓN CON EL PROVEEDOR");
+    router.replace("/login");
+  }, [router]);
+
+  // Con sesión y perfil (incluida la vuelta de un login OAuth), /login reenvía a /juegos.
+  useEffect(() => {
+    if (!loading && current) router.replace("/juegos");
+  }, [loading, current, router]);
+
+  const oauth = async (provider: OAuthProvider) => {
+    if (oauthBusy) return;
+    setOauthBusy(provider);
+    setError(null);
+    const err = await signInWithProvider(provider);
+    if (err) {
+      setError(err);
+      setOauthBusy(null);
+    }
+  };
 
   const switchTab = (t: "in" | "up") => {
     setTab(t);
@@ -86,8 +114,12 @@ export function LoginForm({ defaultEmail = "", defaultPassword = "" }: Props) {
 
         <div className="auth-divider">O CONTINÚA CON</div>
         <div className="social">
-          <button className="btn ghost" type="button">◆  GOOGLE</button>
-          <button className="btn ghost" type="button">▣  GITHUB</button>
+          <button className="btn ghost" type="button" disabled={!!oauthBusy} onClick={() => oauth("google")}>
+            {oauthBusy === "google" ? "CONECTANDO…" : "◆  GOOGLE"}
+          </button>
+          <button className="btn ghost" type="button" disabled={!!oauthBusy} onClick={() => oauth("github")}>
+            {oauthBusy === "github" ? "CONECTANDO…" : "▣  GITHUB"}
+          </button>
         </div>
 
         <div style={{ marginTop: 18, textAlign: "center", fontSize: 11, color: "var(--ink-faint)", letterSpacing: "0.1em" }}>

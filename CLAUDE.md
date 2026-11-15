@@ -40,7 +40,8 @@ Copy `.env.example` to `.env.local` (all `.env*` except `.env.example` are gitig
 - `/` landing (`app/page.tsx`, pieces in `components/home/`)
 - `/juegos` game library · `/juego/[id]` game detail + top 10 (`components/game-detail.tsx`) · `/jugar/[id]` player (`components/game-player.tsx`)
 - `/salon` Hall of Fame: per-game leaderboard tabs + the user's best mark
-- `/login` sign in / sign up (`page.tsx` server component passes dev defaults to `login-form.tsx`)
+- `/login` sign in / sign up with email + password or Google / GitHub OAuth (`page.tsx` server component passes dev defaults to `login-form.tsx`). OAuth `redirectTo` is `/login`, which shows provider errors and forwards to `/juegos` once there is a session with profile.
+- `/login/usuario` username picker for first-time OAuth users (no `profiles` row yet). `components/username-guard.tsx` (mounted in the layout) redirects every route here while `needsUsername` is true.
 - `/about` + contact form → `POST /api/contact` (Resend; validation + honeypot `website` field)
 
 `app/layout.tsx` wraps everything in `UserProvider` and renders `Nav`. Fonts: Press Start 2P (`--font-pixel`), JetBrains Mono, Courier Prime. Visual styles live mostly in `app/globals.css` (including `.cover-*` game covers and `.game-canvas`).
@@ -49,13 +50,13 @@ Copy `.env.example` to `.env.local` (all `.env*` except `.env.example` are gitig
 
 - `lib/data.ts` — static catalog `GAMES` (`Game` type: `id`, `title`, `cat`, `cover`, `color`, …). Source of game ids.
 - `lib/supabase/client.ts` — single browser client typed with `database.types.ts` (regenerate types via Supabase MCP after schema changes).
-- `lib/user.tsx` — `UserProvider` / `useUser()`: session + `profiles` lookup, `signIn`, `signUp` (username `^[A-Z0-9_]{3,10}$`, uppercased; password ≥ 8), `logout`. Errors returned as uppercase Spanish strings.
+- `lib/user.tsx` — `UserProvider` / `useUser()`: session + `profiles` lookup, `signIn`, `signUp` (username `^[A-Z0-9_]{3,10}$`, uppercased; password ≥ 8), `signInWithProvider("google" | "github")`, `claimUsername` (inserts own `profiles` row), `needsUsername`, `suggestedUsername` (from provider metadata), `logout`. Errors returned as uppercase Spanish strings.
 - `lib/scores.ts` — `saveScore`, `fetchLeaderboard`, `fetchMyBest` (rank = rows with higher score + 1).
 - `lib/use-leaderboard.ts` — `useLeaderboard(gameId, limit)` and `useMyBest(gameId, userId)` hooks.
 
 ### Database (`supabase/migrations/`)
 
-- `profiles` (1:1 with `auth.users`, created by trigger `handle_new_user` from `raw_user_meta_data.username`).
+- `profiles` (1:1 with `auth.users`, created by trigger `handle_new_user` from `raw_user_meta_data.username` only when present — email sign-up; OAuth users insert their own row via RLS policy "profiles: insertar el propio"). Google/GitHub providers and redirect URLs (`http://localhost:3000/**`) are configured manually in the Supabase dashboard.
 - `scores` (one row per saved game; insert only own rows via RLS).
 - `games` (catalog of games with real ranking). `scores.game_id` has an FK to `games.id` — **saving a score fails if the game has no row in `games`**.
 - View `leaderboard` (`security_invoker`): best score per user per game.
@@ -76,7 +77,7 @@ Adding a real game touches: engine in `games/<id>/`, `games/registry.ts`, entry 
 
 ## Workflow: spec-driven development
 
-Features are planned as specs in `specs/NN-slug.md` (status words: `Borrador` → `Aprobado` → `Implementado`), then implemented on a branch `spec-NN-slug` and merged via PR. Implemented so far: 01 visual MVP, 02 landing + `/juegos`, 03 about + Resend contact, 04 Supabase auth + ranking, 05 Asteroides, 06 `games` table + FK, 07 Tetris, 08 Arkanoid, 09 Snake, 10 Ranaria, 11 sistema de skins, 12 controles táctiles, 13 Frogger, 14 Bloque Buster, 15 Caída, 16 Serpentina, 17 Glotón, 18 Invasores, 19 Rocas, 20 Duelo Pixel.
+Features are planned as specs in `specs/NN-slug.md` (status words: `Borrador` → `Aprobado` → `Implementado`), then implemented on a branch `spec-NN-slug` and merged via PR. Implemented so far: 01 visual MVP, 02 landing + `/juegos`, 03 about + Resend contact, 04 Supabase auth + ranking, 05 Asteroides, 06 `games` table + FK, 07 Tetris, 08 Arkanoid, 09 Snake, 10 Ranaria, 11 sistema de skins, 12 controles táctiles, 13 Frogger, 14 Bloque Buster, 15 Caída, 16 Serpentina, 17 Glotón, 18 Invasores, 19 Rocas, 20 Duelo Pixel, 21 OAuth Google + GitHub.
 
 Project skills (`.claude/skills/`, user-invoked only):
 

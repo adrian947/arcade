@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { Press_Start_2P, JetBrains_Mono, Courier_Prime } from "next/font/google";
 import { Nav } from "@/components/nav";
+import { UsernameGuard } from "@/components/username-guard";
 import { UserProvider } from "@/lib/user";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="av-bg" />
         <div className="av-noise" />
         <UserProvider>
+          <UsernameGuard />
           <div className="av-root">
             <Nav />
             <main className="av-main">{children}</main>
